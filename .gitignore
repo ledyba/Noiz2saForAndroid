@@ -1,3 +1,8 @@
 bin/
 gen/
 libs/
+jni/SDL
+*.o
+*.o.d
+*.so
+*.a
