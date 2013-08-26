@@ -2,6 +2,7 @@ bin/
 gen/
 libs/
 jni/SDL
+jni/SDL_mixer
 *.o
 *.o.d
 *.so
