@@ -12,9 +12,9 @@
 #ifndef FOE_H_
 #define FOE_H_
 
-#include "bulletml/bulletmlparser.h"
-#include "bulletml/bulletmlparser-tinyxml.h"
-#include "bulletml/bulletmlrunner.h"
+#include "bulletmlparser.h"
+#include "bulletmlparser-tinyxml.h"
+#include "bulletmlrunner.h"
 #include "foecommand.h"
 #include "barragemanager.h"
 
