@@ -4,7 +4,10 @@
 #include "bulletmltree.h"
 
 #include <string>
+#include <vector>
 #include <assert.h>
+
+#include "../../src/java.h"
 
 BulletMLParserTinyXML::BulletMLParserTinyXML(const std::string& filename)
     : xmlFile_(filename), curNode_(0)
@@ -72,9 +75,24 @@ void BulletMLParserTinyXML::parseImpl(tinyxml2::XMLDocument& doc) {
 }
 
 void BulletMLParserTinyXML::parse() {
-    tinyxml2::XMLDocument doc;
-    doc.LoadFile(xmlFile_.c_str());
-	parseImpl(doc);
+    AAssetManager* mgr = getAAssetManager();
+    AAsset* as = AAssetManager_open(mgr, xmlFile_.c_str(), AASSET_MODE_STREAMING);
+    const off_t size = AAsset_getLength(as);
+    char* const buff = (char*)malloc(size+1);
+    AAsset_seek(as, 0, SEEK_SET);
+    if( AAsset_read(as, buff, size) != size ){
+	    AAsset_close(as);
+		throw BulletMLError(std::string("failed to read file: ")+xmlFile_);
+    }
+	AAsset_close(as);
+    
+    buff[size]=0;
+    {
+		tinyxml2::XMLDocument doc;
+		doc.Parse(buff);
+		parseImpl(doc);
+	}
+	free(buff);
 }
 
 

@@ -18,6 +18,8 @@
 #include "SDL_mixer.h"
 #include "soundmanager.h"
 
+#include "log.h"
+
 static int useAudio = 0;
 
 #define MUSIC_NUM 7
@@ -68,7 +70,9 @@ static void loadSounds() {
       fprintf(stderr, "Couldn't load: %s\n", name);
       useAudio = 0;
       return;
-    }
+    }else{
+      fprintf(stdout, "%s loaded.\n", name);
+	}
   }
   for ( i=0 ; i<CHUNK_NUM ; i++ ) {
     strcpy(name, "sounds/");
@@ -77,9 +81,13 @@ static void loadSounds() {
       fprintf(stderr, "Couldn't load: %s\n", name);
       useAudio = 0;
       return;
-    }
+    }else{
+      fprintf(stdout, "%s loaded.\n", name);
+	}
+
     chunkFlag[i] = 0;
   }
+  fprintf(stdout, "All music resources has been loaded.\n");
 }
 
 void initSound() {
@@ -92,6 +100,8 @@ void initSound() {
   if ( SDL_InitSubSystem(SDL_INIT_AUDIO) < 0 ) {
     fprintf(stderr, "Unable to initialize SDL_AUDIO: %s\n", SDL_GetError());
     return;
+  }else{
+      fprintf(stdout, "SDL_AUDIO initialized.\n");
   }
 
   audio_rate = 44100;
@@ -103,10 +113,12 @@ void initSound() {
     fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
     return;
   } else {
+    fprintf(stdout, "Audio opened.\n");
     Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
   }
 
   useAudio = 1;
+  fprintf(stdout, "Audio all initialized.\n");
   loadSounds();
 }
 

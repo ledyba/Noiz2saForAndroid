@@ -1,10 +1,14 @@
 package org.libsdl.app;
 
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
+
+import org.ledyba.noiz2sa.Helper;
 
 import android.app.*;
 import android.content.*;
@@ -58,6 +62,7 @@ public class SDLActivity extends Activity {
         //System.loadLibrary("SDL2_net");
         //System.loadLibrary("SDL2_ttf");
         System.loadLibrary("main");
+        Helper.init();
     }
 
     // Setup

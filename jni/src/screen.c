@@ -44,8 +44,8 @@ static int pitch, ppitch;
 
 static SDL_Surface *sprite[SPRITE_NUM];
 static char *spriteFile[SPRITE_NUM] = {
-  "title_n.bmp.dummy.zip", "title_o.bmp.dummy.zip", "title_i.bmp.dummy.zip", "title_z.bmp.dummy.zip", "title_2.bmp.dummy.zip", 
-  "title_s.bmp.dummy.zip", "title_a.bmp.dummy.zip",
+  "title_n.amr", "title_o.amr", "title_i.amr", "title_z.amr", "title_2.amr", 
+  "title_s.amr", "title_a.amr",
 };
 
 Uint8 *keys;
@@ -532,16 +532,16 @@ int getPadState() {
     x = SDL_JoystickGetAxis(stick, 0);
     y = SDL_JoystickGetAxis(stick, 1);
   }
-  if ( keys[SDLK_RIGHT] == SDL_PRESSED || keys[SDLK_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
+  if ( keys[SDL_SCANCODE_RIGHT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
     pad |= PAD_RIGHT;
   }
-  if ( keys[SDLK_LEFT] == SDL_PRESSED || keys[SDLK_KP_4] == SDL_PRESSED || x < -JOYSTICK_AXIS ) {
+  if ( keys[SDL_SCANCODE_LEFT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_4] == SDL_PRESSED || x < -JOYSTICK_AXIS ) {
     pad |= PAD_LEFT;
   }
-  if ( keys[SDLK_DOWN] == SDL_PRESSED || keys[SDLK_KP_2] == SDL_PRESSED || y > JOYSTICK_AXIS ) {
+  if ( keys[SDL_SCANCODE_DOWN] == SDL_PRESSED || keys[SDL_SCANCODE_KP_2] == SDL_PRESSED || y > JOYSTICK_AXIS ) {
     pad |= PAD_DOWN;
   }
-  if ( keys[SDLK_UP] == SDL_PRESSED ||  keys[SDLK_KP_8] == SDL_PRESSED || y < -JOYSTICK_AXIS ) {
+  if ( keys[SDL_SCANCODE_UP] == SDL_PRESSED ||  keys[SDL_SCANCODE_KP_8] == SDL_PRESSED || y < -JOYSTICK_AXIS ) {
     pad |= PAD_UP;
   }
   return pad;

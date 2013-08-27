@@ -281,10 +281,11 @@ int main(int argc, char *argv[]) {
   initTitle();
 
   while ( !done ) {
+  fprintf(stderr, "OK1");
     SDL_PollEvent(&event);
     keys = SDL_GetKeyboardState(NULL);
-    if ( keys[SDLK_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT ) done = 1;
-    if ( keys[SDLK_p] == SDL_PRESSED ) {
+    if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT ) done = 1;
+    if ( keys[SDL_SCANCODE_P] == SDL_PRESSED ) {
       if ( !pPrsd ) {
 	if ( status == IN_GAME ) {
 	  status = PAUSE;

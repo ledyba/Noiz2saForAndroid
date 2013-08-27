@@ -26,6 +26,9 @@ extern "C" {
 #include "barragemanager.h"
 #include "foe.h"
 
+#include "log.h"
+#include "java.h"
+
 #define BARRAGE_PATTERN_MAX 32
 
 static Barrage barragePattern[BARRAGE_TYPE_NUM][BARRAGE_PATTERN_MAX];
@@ -39,30 +42,34 @@ static const char *BARRAGE_DIR_NAME[] = {
 };
 
 static int readBulletMLFiles(const char *dirPath, Barrage brg[]) {
-  DIR *dp;
-  struct dirent *dir;
-  int i = 0;
-  char fileName[256];
-  if ( (dp = opendir(dirPath)) == NULL ) {
-    fprintf(stderr, "Can't open directory: %s\n", dirPath);
-    exit(1);
-  }
-  while ((dir = readdir(dp)) != NULL) {
-    if ( strcmp(strrchr(dir->d_name, '.'), ".xml") != 0 ) continue; // Read .xml files.
-    strcpy(fileName, dirPath);
-    strcat(fileName, "/");
-    strcat(fileName, dir->d_name);
-    brg[i].bulletml = new BulletMLParserTinyXML(fileName);
-    brg[i].bulletml->build(); i++;
-    printf("%s\n", fileName);
-  }
-  closedir(dp);
-  return i;
+	int i = 0;
+	char fileName[256];
+	AAssetDir* const di = AAssetManager_openDir(getAAssetManager(), dirPath);
+	if ( di == NULL ) {
+		fprintf(stderr, "Can't open directory: %s\n", dirPath);
+		exit(1);
+	}else{
+		fprintf(stdout, "Opened directory: %s\n", dirPath);
+	}
+	const char* dir = 0;
+	while ((dir = AAssetDir_getNextFileName(di)) != NULL) {
+		if ( strcmp(strrchr(dir, '.'), ".amr") != 0 ) continue; // Read .xml files.
+		strcpy(fileName, dirPath);
+		strcat(fileName, "/");
+		strcat(fileName, dir);
+		fprintf(stdout, "Opening...: %s\n", fileName);
+		brg[i].bulletml = new BulletMLParserTinyXML(fileName);
+		brg[i].bulletml->build(); i++;
+		fprintf(stdout, "XML load: %s\n", fileName);
+	}
+	AAssetDir_close(di);
+	return i;
 }
 
 static unsigned int rnd;
 
 void initBarragemanager() {
+  fprintf(stdout, "initBarragemanager...");
   for ( int i=0 ; i<BARRAGE_TYPE_NUM ; i++ ) {
     barragePatternNum[i] = readBulletMLFiles(BARRAGE_DIR_NAME[i], barragePattern[i]);
     printf("--------\n");
@@ -70,6 +77,7 @@ void initBarragemanager() {
       barragePattern[i][j].type = i;
     }
   }
+  fprintf(stdout, "Initialized.\n");
 }
 
 void closeBarragemanager() {

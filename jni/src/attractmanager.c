@@ -67,11 +67,13 @@ void loadPreference() {
   int i, j;
   int version;
   if ( NULL == (fp = fopen(PREF_FILE,"rb")) ) {
+    fprintf(stdout, "file not found: %s", PREF_FILE);
     initHiScore();
     return;
   }
   version = getInt(fp);
   if ( version != VERSION_NUM ) {
+    fprintf(stdout, "score file version does not match: %d != %d", version, VERSION_NUM);
     initHiScore();
     return;
   }
@@ -86,6 +88,7 @@ void loadPreference() {
   }
   hiScore.stage = getInt(fp);
   fclose(fp);
+  fprintf(stdout, "Preference loaded.");
 }
 
 // Save preference.
@@ -105,6 +108,7 @@ void savePreference() {
   }
   putInt(hiScore.stage, fp);
   fclose(fp);
+  fprintf(stdout, "Preference saved.");
 }
 
 void initGameState(int stg) {
