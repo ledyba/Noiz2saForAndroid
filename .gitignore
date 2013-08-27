@@ -3,6 +3,7 @@ gen/
 libs/
 jni/SDL
 jni/SDL_mixer
+obj/
 *.o
 *.o.d
 *.so
