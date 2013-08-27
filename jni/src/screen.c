@@ -23,9 +23,11 @@
 #include "letterrender.h"
 #include "attractmanager.h"
 
+#include "log.h"
 int windowMode = 0;
 int brightness = DEFAULT_BRIGHTNESS;
 
+static SDL_Window* window;
 static SDL_Surface *video, *layer, *lpanel, *rpanel;
 static LayerBit **smokeBuf;
 static LayerBit *pbuf;
@@ -53,7 +55,7 @@ static void loadSprites() {
   int i;
   char name[32];
   color[0].r = 100; color[0].g = 0; color[0].b = 0;
-  SDL_SetColors(video, color, 0, 1);
+  SDL_SetPaletteColors(video->format->palette, color, 0, 1);
   for ( i=0 ; i<SPRITE_NUM ; i++ ) {
     strcpy(name, "images/");
     strcat(name, spriteFile[i]);
@@ -63,13 +65,11 @@ static void loadSprites() {
       SDL_Quit();
       exit(1);
     }
-    sprite[i] = SDL_ConvertSurface(img,
-				   video->format, 
-				   SDL_HWSURFACE | SDL_SRCCOLORKEY);
-    SDL_SetColorKey(sprite[i], SDL_SRCCOLORKEY | SDL_RLEACCEL, 0);
+    sprite[i] = SDL_ConvertSurface(img, video->format, 0);
+    SDL_SetColorKey(sprite[i], 0, 0);
   }
   color[0].r = color[0].g = color[0].b = 255;
-  SDL_SetColors(video, color, 0, 1);
+  SDL_SetPaletteColors(video->format->palette, color, 0, 1);
 }
 
 void drawSprite(int n, int x, int y) {
@@ -86,10 +86,10 @@ static void initPalette() {
     color[i].g = color[i].g*brightness/256;
     color[i].b = color[i].b*brightness/256;
   }
-  SDL_SetColors(video, color, 0, 256);
-  SDL_SetColors(layer, color, 0, 256);
-  SDL_SetColors(lpanel, color, 0, 256);
-  SDL_SetColors(rpanel, color, 0, 256);
+  SDL_SetPaletteColors(video->format->palette, color, 0, 256);
+  SDL_SetPaletteColors(layer->format->palette, color, 0, 1);
+  SDL_SetPaletteColors(lpanel->format->palette, color, 0, 1);
+  SDL_SetPaletteColors(rpanel->format->palette, color, 0, 1);
 }
 
 static int lyrSize;
@@ -121,7 +121,7 @@ static void makeSmokeBuf() {
   }
 }
 
-void initSDL(int window) {
+void initSDL(int window_) {
   Uint8 videoBpp;
   Uint32 videoFlags;
   SDL_PixelFormat *pfrm;
@@ -133,10 +133,17 @@ void initSDL(int window) {
   atexit(SDL_Quit);
 
   videoBpp = BPP;
-  videoFlags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE;
-  if ( !window ) videoFlags |= SDL_FULLSCREEN;
+  videoFlags = 0;
+  if ( !window_ ) videoFlags |= SDL_WINDOW_FULLSCREEN;
 
-  if ( (video = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, videoBpp, videoFlags)) == NULL ) {
+  if( (window = SDL_CreateWindow(CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, videoFlags)) == NULL )
+  {
+	    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
+	    SDL_Quit();
+	    exit(1);
+  }
+
+  if ( (video = SDL_GetWindowSurface(window)) == NULL ) {
     fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
     SDL_Quit();
     exit(1);
@@ -188,8 +195,9 @@ void initSDL(int window) {
 
   stick = SDL_JoystickOpen(0);
 
-  SDL_WM_SetCaption(CAPTION, NULL);
+ // SDL_WM_SetCaption(CAPTION, NULL);
   SDL_ShowCursor(SDL_DISABLE);
+  SDL_SetWindowGrab(window, 1);
   //SDL_WM_GrabInput(SDL_GRAB_ON);
 }
 
@@ -211,7 +219,7 @@ void flipScreen() {
   if ( status == TITLE ) {
     drawTitle();
   }
-  SDL_Flip(video);
+  SDL_UpdateWindowSurface( window );
 }
 
 void clearScreen() {
@@ -528,16 +536,16 @@ int getPadState() {
     x = SDL_JoystickGetAxis(stick, 0);
     y = SDL_JoystickGetAxis(stick, 1);
   }
-  if ( keys[SDLK_RIGHT] == SDL_PRESSED || keys[SDLK_KP6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
+  if ( keys[SDLK_RIGHT] == SDL_PRESSED || keys[SDLK_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
     pad |= PAD_RIGHT;
   }
-  if ( keys[SDLK_LEFT] == SDL_PRESSED || keys[SDLK_KP4] == SDL_PRESSED || x < -JOYSTICK_AXIS ) {
+  if ( keys[SDLK_LEFT] == SDL_PRESSED || keys[SDLK_KP_4] == SDL_PRESSED || x < -JOYSTICK_AXIS ) {
     pad |= PAD_LEFT;
   }
-  if ( keys[SDLK_DOWN] == SDL_PRESSED || keys[SDLK_KP2] == SDL_PRESSED || y > JOYSTICK_AXIS ) {
+  if ( keys[SDLK_DOWN] == SDL_PRESSED || keys[SDLK_KP_2] == SDL_PRESSED || y > JOYSTICK_AXIS ) {
     pad |= PAD_DOWN;
   }
-  if ( keys[SDLK_UP] == SDL_PRESSED ||  keys[SDLK_KP8] == SDL_PRESSED || y < -JOYSTICK_AXIS ) {
+  if ( keys[SDLK_UP] == SDL_PRESSED ||  keys[SDLK_KP_8] == SDL_PRESSED || y < -JOYSTICK_AXIS ) {
     pad |= PAD_UP;
   }
   return pad;

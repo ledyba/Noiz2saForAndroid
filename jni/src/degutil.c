@@ -12,6 +12,7 @@
 #include <math.h>
 #include "degutil.h"
 
+#include "log.h"
 static int tantbl[TAN_TABLE_SIZE+2];
 int sctbl[SC_TABLE_SIZE+SC_TABLE_SIZE/4];
 

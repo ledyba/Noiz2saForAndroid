@@ -22,6 +22,7 @@
 #include "soundmanager.h"
 #include "degutil.h"
 
+#include "log.h"
 int score;
 static int nextExtend, neAdd;
 static int dsc;
@@ -34,6 +35,17 @@ static HiScore hiScore;
 #define PREF_FILE "noiz2sa.prf"
 #define DEFAULT_HISCORE 100000
 #define DEFAULT_SCENE_HISCORE 10000
+
+static void putInt(int i, FILE* fp)
+{
+	fwrite(&i, sizeof(i), 1, fp);
+}
+static int getInt(FILE* fp)
+{
+	int i;
+	fread(&i, sizeof(i), 1, fp);
+	return i;
+}
 
 static void initHiScore() {
   int i, j;
@@ -58,21 +70,21 @@ void loadPreference() {
     initHiScore();
     return;
   }
-  version = getw(fp);
+  version = getInt(fp);
   if ( version != VERSION_NUM ) {
     initHiScore();
     return;
   }
   for ( i=0 ; i<STAGE_NUM ; i++ ) {
-    hiScore.stageScore[i] = getw(fp);
+    hiScore.stageScore[i] = getInt(fp);
     for ( j=0 ; j<SCENE_NUM ; j++ ) {
-      hiScore.sceneScore[i][j] = getw(fp);
+      hiScore.sceneScore[i][j] = getInt(fp);
     }
   }
   for ( i=0 ; i<ENDLESS_STAGE_NUM ; i++ ) {
-    hiScore.stageScore[i+STAGE_NUM] = getw(fp);
+    hiScore.stageScore[i+STAGE_NUM] = getInt(fp);
   }
-  hiScore.stage = getw(fp);
+  hiScore.stage = getInt(fp);
   fclose(fp);
 }
 
@@ -81,17 +93,17 @@ void savePreference() {
   FILE *fp;
   int i, j;
   if ( NULL == (fp = fopen(PREF_FILE,"wb")) ) return;
-  putw(VERSION_NUM, fp);
+  putInt(VERSION_NUM, fp);
   for ( i=0 ; i<STAGE_NUM ; i++ ) {
-    putw(hiScore.stageScore[i], fp);
+    putInt(hiScore.stageScore[i], fp);
     for ( j=0 ; j<SCENE_NUM ; j++ ) {
-      putw(hiScore.sceneScore[i][j], fp);
+      putInt(hiScore.sceneScore[i][j], fp);
     }
   }
   for ( i=0 ; i<ENDLESS_STAGE_NUM ; i++ ) {
-    putw(hiScore.stageScore[i+STAGE_NUM], fp);
+    putInt(hiScore.stageScore[i+STAGE_NUM], fp);
   }
-  putw(hiScore.stage, fp);
+  putInt(hiScore.stage, fp);
   fclose(fp);
 }
 

@@ -46,7 +46,7 @@ LOCAL_SRC_FILES := \
 ../bulletml/src/bulletmlrunner.cpp              \
 $(SDL_PATH)/src/main/android/SDL_android_main.c
 
-LOCAL_SHARED_LIBRARIES := SDL2 SDL_mixer
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_mixer
 LOCAL_STATIC_LIBRARIES := android_support
 
 LOCAL_LDLIBS := -lGLESv1_CM -llog

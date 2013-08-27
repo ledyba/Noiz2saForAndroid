@@ -20,6 +20,7 @@
 #include "shot.h"
 #include "soundmanager.h"
 
+#include "log.h"
 Shot shot[SHOT_MAX];
 
 void initShots() {

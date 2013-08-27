@@ -22,6 +22,7 @@
 #include "soundmanager.h"
 #include "attractmanager.h"
 
+#include "log.h"
 Bonus bonus[BONUS_MAX];
 int bonusScore;
 

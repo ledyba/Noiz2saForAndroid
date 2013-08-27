@@ -13,6 +13,7 @@
 #include "letterrender.h"
 #include "letterdata.h"
 
+#include "log.h"
 void drawLetterBuf(int idx, int lx, int ly, int ltSize, int d,
 		LayerBit color1, LayerBit color2, LayerBit *buf, int panel) {
   int i;

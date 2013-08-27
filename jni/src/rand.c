@@ -11,6 +11,7 @@
  */
 #include "rand.h"
 
+#include "log.h"
 static unsigned int multiplier = 8513;
 static unsigned int addend = 179;
 

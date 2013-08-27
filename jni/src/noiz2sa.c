@@ -28,6 +28,8 @@
 #include "soundmanager.h"
 #include "attractmanager.h"
 
+#include "log.h"
+
 static int noSound = 0;
 
 // Initialize and load preference.
@@ -259,6 +261,7 @@ int interval = INTERVAL_BASE;
 int tick = 0;
 static int pPrsd = 1;
 
+
 int main(int argc, char *argv[]) {
   int done = 0;
   long prvTickCount = 0;
@@ -272,6 +275,9 @@ int main(int argc, char *argv[]) {
 
   initDegutil();
   initSDL(windowMode);
+  fprintf(stdout, "initSDK OK");
+  return 0;
+  
   if ( !noSound ) initSound();
   initFirst();
   initTitle();

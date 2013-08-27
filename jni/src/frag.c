@@ -20,6 +20,7 @@
 #include "shot.h"
 #include "frag.h"
 
+#include "log.h"
 Frag frag[FRAG_MAX];
 
 void initFrags() {

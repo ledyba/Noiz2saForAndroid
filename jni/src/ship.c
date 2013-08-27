@@ -26,6 +26,7 @@
 #include "soundmanager.h"
 #include "attractmanager.h"
 
+#include "log.h"
 Ship ship;
 
 #define SHIP_SPEED 1280

@@ -37,3 +37,4 @@ void initTitle();
 void initGame(int stg);
 void initGameover();
 void initStageClear();
+

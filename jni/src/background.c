@@ -18,6 +18,7 @@
 #include "vector.h"
 #include "background.h"
 
+#include "log.h"
 static Board board[BOARD_MAX];
 
 void initBackground() {
