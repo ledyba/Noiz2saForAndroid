@@ -275,8 +275,6 @@ int main(int argc, char *argv[]) {
 
   initDegutil();
   initSDL(windowMode);
-  fprintf(stdout, "initSDK OK");
-  return 0;
   
   if ( !noSound ) initSound();
   initFirst();

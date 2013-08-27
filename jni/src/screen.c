@@ -28,6 +28,7 @@ int windowMode = 0;
 int brightness = DEFAULT_BRIGHTNESS;
 
 static SDL_Window* window;
+static SDL_Surface* windowSurface;
 static SDL_Surface *video, *layer, *lpanel, *rpanel;
 static LayerBit **smokeBuf;
 static LayerBit *pbuf;
@@ -43,8 +44,8 @@ static int pitch, ppitch;
 
 static SDL_Surface *sprite[SPRITE_NUM];
 static char *spriteFile[SPRITE_NUM] = {
-  "title_n.bmp", "title_o.bmp", "title_i.bmp", "title_z.bmp", "title_2.bmp", 
-  "title_s.bmp", "title_a.bmp",
+  "title_n.bmp.dummy.zip", "title_o.bmp.dummy.zip", "title_i.bmp.dummy.zip", "title_z.bmp.dummy.zip", "title_2.bmp.dummy.zip", 
+  "title_s.bmp.dummy.zip", "title_a.bmp.dummy.zip",
 };
 
 Uint8 *keys;
@@ -122,19 +123,14 @@ static void makeSmokeBuf() {
 }
 
 void initSDL(int window_) {
-  Uint8 videoBpp;
-  Uint32 videoFlags;
-  SDL_PixelFormat *pfrm;
-
   if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 ) {
     fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
     exit(1);
   }
   atexit(SDL_Quit);
 
-  videoBpp = BPP;
-  videoFlags = 0;
-  if ( !window_ ) videoFlags |= SDL_WINDOW_FULLSCREEN;
+  Uint8 const videoBpp = BPP;
+  Uint32 const videoFlags = (window_) ? 0 : SDL_WINDOW_FULLSCREEN;
 
   if( (window = SDL_CreateWindow(CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, videoFlags)) == NULL )
   {
@@ -143,23 +139,22 @@ void initSDL(int window_) {
 	    exit(1);
   }
 
-  if ( (video = SDL_GetWindowSurface(window)) == NULL ) {
+  if ( (windowSurface = SDL_GetWindowSurface(window)) == NULL ) {
+    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
+    SDL_Quit();
+    exit(1);
+  }
+  if ( (video = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, videoBpp, 0, 0, 0, 0)) == NULL ) {
     fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
     SDL_Quit();
     exit(1);
   }
   screenRect.x = screenRect.y = 0;
   screenRect.w = SCREEN_WIDTH; screenRect.h = SCREEN_HEIGHT;
-  pfrm = video->format;
-  if ( NULL == ( layer = SDL_CreateRGBSurface
-		(SDL_SWSURFACE, LAYER_WIDTH, LAYER_HEIGHT, videoBpp,
-		 pfrm->Rmask, pfrm->Gmask, pfrm->Bmask, pfrm->Amask)) ||
-       NULL == ( lpanel = SDL_CreateRGBSurface
-		(SDL_SWSURFACE, PANEL_WIDTH, PANEL_HEIGHT, videoBpp,
-		 pfrm->Rmask, pfrm->Gmask, pfrm->Bmask, pfrm->Amask)) ||
-       NULL == ( rpanel = SDL_CreateRGBSurface
-		(SDL_SWSURFACE, PANEL_WIDTH, PANEL_HEIGHT, videoBpp,
-		 pfrm->Rmask, pfrm->Gmask, pfrm->Bmask, pfrm->Amask)) ) {
+  SDL_PixelFormat* const pfrm = video->format;
+  if ( NULL == ( layer = SDL_CreateRGBSurface (0, LAYER_WIDTH, LAYER_HEIGHT, videoBpp, 0, 0, 0, 0)) ||
+       NULL == ( lpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH, PANEL_HEIGHT, videoBpp, 0, 0, 0, 0)) ||
+       NULL == ( rpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH, PANEL_HEIGHT, videoBpp, 0, 0, 0, 0)) ) {
       fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
       exit(1);
   }
@@ -216,6 +211,7 @@ void flipScreen() {
   SDL_BlitSurface(layer, NULL, video, &layerRect);
   SDL_BlitSurface(lpanel, NULL, video, &lpanelRect);
   SDL_BlitSurface(rpanel, NULL, video, &rpanelRect);
+  SDL_BlitSurface(video, NULL, windowSurface, &screenRect);
   if ( status == TITLE ) {
     drawTitle();
   }
