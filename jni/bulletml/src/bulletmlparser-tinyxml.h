@@ -10,7 +10,7 @@
 
 #include "bulletmlcommon.h"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml/tinyxml2.h"
 
 class BulletMLNode;
 
@@ -22,11 +22,11 @@ public:
     DECLSPEC virtual void parse();
 
 protected:
-	void parseImpl(TiXmlDocument& doc);
+	void parseImpl(tinyxml2::XMLDocument& doc);
 
 protected:
-    void getTree(TiXmlNode* node);
-    void translateNode(TiXmlNode* node);
+    void getTree(const tinyxml2::XMLNode* node);
+    void translateNode(const tinyxml2::XMLNode* node);
 
 private:
     std::string xmlFile_;
