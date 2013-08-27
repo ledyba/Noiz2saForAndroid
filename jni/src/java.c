@@ -11,7 +11,6 @@
 static JavaVM* vm;
 static jclass* klass;
 
-int attach = 0;
 
 static JNIEnv* attachJavaVM()
 {
@@ -21,15 +20,14 @@ static JNIEnv* attachJavaVM()
 		LOGE("failed to attach current thread");
 		return 0;
 	}
-	attach = 1;
 	return env;
 }
 static void detatchJavaVM()
 {
-	if(attach){
-		//(*vm)->DetachCurrentThread(vm);
-		attach = 0;
-	}
+	/* if(attach){ */
+	/* 	(*vm)->DetachCurrentThread(vm); */
+	/* 	attach = 0; */
+	/* } */
 }
 
 void JNICALL Java_org_ledyba_noiz2sa_Helper_onLoadJNI(JNIEnv* env, jclass klass_)
