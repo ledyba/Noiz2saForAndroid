@@ -23,7 +23,9 @@
 #include "letterrender.h"
 #include "attractmanager.h"
 
+#include "java.h"
 #include "log.h"
+
 int windowMode = 0;
 int brightness = DEFAULT_BRIGHTNESS;
 
@@ -49,7 +51,6 @@ static char *spriteFile[SPRITE_NUM] = {
 };
 
 Uint8 *keys;
-SDL_Joystick *stick = NULL;
 
 static void loadSprites() {
   SDL_Surface *img;
@@ -88,9 +89,9 @@ static void initPalette() {
     color[i].b = color[i].b*brightness/256;
   }
   SDL_SetPaletteColors(video->format->palette, color, 0, 256);
-  SDL_SetPaletteColors(layer->format->palette, color, 0, 1);
-  SDL_SetPaletteColors(lpanel->format->palette, color, 0, 1);
-  SDL_SetPaletteColors(rpanel->format->palette, color, 0, 1);
+  SDL_SetPaletteColors(layer->format->palette, color, 0, 256);
+  SDL_SetPaletteColors(lpanel->format->palette, color, 0, 256);
+  SDL_SetPaletteColors(rpanel->format->palette, color, 0, 256);
 }
 
 static int lyrSize;
@@ -123,7 +124,7 @@ static void makeSmokeBuf() {
 }
 
 void initSDL(int window_) {
-  if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 ) {
+  if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
     fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
     exit(1);
   }
@@ -187,8 +188,6 @@ void initSDL(int window_) {
   clearRPanel();
 
   loadSprites();
-
-  stick = SDL_JoystickOpen(0);
 
  // SDL_WM_SetCaption(CAPTION, NULL);
   SDL_ShowCursor(SDL_DISABLE);
@@ -526,12 +525,9 @@ int drawNumCenter(int n, int x ,int y, int s, int c1, int c2) {
 #define JOYSTICK_AXIS 16384
 
 int getPadState() {
-  int x = 0, y = 0;
+  const float x = JOYPAD_getX();
+  const float y = JOYPAD_getY();
   int pad = 0;
-  if ( stick != NULL ) {
-    x = SDL_JoystickGetAxis(stick, 0);
-    y = SDL_JoystickGetAxis(stick, 1);
-  }
   if ( keys[SDL_SCANCODE_RIGHT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
     pad |= PAD_RIGHT;
   }
@@ -551,13 +547,10 @@ int buttonReversed = 0;
 
 int getButtonState() {
   int btn = 0;
-  int btn1 = 0, btn2 = 0, btn3 = 0, btn4 = 0;
-  if ( stick != NULL ) {
-    btn1 = SDL_JoystickGetButton(stick, 0);
-    btn2 = SDL_JoystickGetButton(stick, 1);
-    btn3 = SDL_JoystickGetButton(stick, 2);
-    btn4 = SDL_JoystickGetButton(stick, 3);
-  }
+  const int btn1 = JOYPAD_getA();
+  const int btn2 = JOYPAD_getB();
+  const int btn3 = 0;
+  const int btn4 = 0;
   if ( keys[SDLK_z] == SDL_PRESSED || btn1 || btn4 ) {
     if ( !buttonReversed ) {
       btn |= PAD_BUTTON1;

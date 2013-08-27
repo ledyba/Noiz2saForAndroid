@@ -281,7 +281,6 @@ int main(int argc, char *argv[]) {
   initTitle();
 
   while ( !done ) {
-  fprintf(stderr, "OK1");
     SDL_PollEvent(&event);
     keys = SDL_GetKeyboardState(NULL);
     if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT ) done = 1;
