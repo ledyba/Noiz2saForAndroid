@@ -22,6 +22,10 @@
 #include "soundmanager.h"
 #include "degutil.h"
 
+#ifndef ANDROID
+typedef int FILE;
+#endif
+
 #include "log.h"
 int score;
 static int nextExtend, neAdd;
@@ -179,49 +183,54 @@ void drawScore() {
   if ( dsc == score ) return;
   dsc = score;
   clearLPanel();
-  drawNum(score, 118, 24, 28, 16*1-12, 16*1-3);
-  drawNum(bonusScore, 24, 14, 16, 16*1-12, 16*1-3);
+  drawNum(score,      24, 32, 14, 16*1-12, 16*1-3);
+  drawNum(bonusScore, 24, 68, 8,  16*1-12, 16*1-3);
 }
 
 #define SCENE_STAT_X 77
 #define SCENE_STAT_SIZE 9
 
 void drawRPanel() {
-  int y;
   char *str = "LEFT";
   clearRPanel();
   if ( left >= 0 ) {
-    drawString(str, 34, 272, 24, 3, 16*1-12, 16*1-3, rpbuf);
-    drawLetter(left, 34, 450, 24, 3, 16*2-10, 16*2-1, rpbuf);
+    drawString(str,  220, 34, 12, 2, 16*1-12, 16*1-3, rpbuf);
+    drawLetter(left, 300, 34, 12, 2, 16*2-10, 16*2-1, rpbuf);
   }
-  y = 24;
-  if ( !endless ) {
-    y = drawNumRight(stage+1, 124, y, 24, 16*1-12, 16*1-3);
-    drawLetter(38, 124, y, 24, 3,  16*1-12, 16*1-3, rpbuf);
-    y += 24*1.7f;
-    if ( scene >= 10 ) {
-      drawLetter('E'-'A'+10, 124, y, 24, 3, 16*1-12, 16*1-3, rpbuf);
-      return;
-    }
+  {
+	  int x = 220;
+	  if ( !endless ) {
+		// Stage
+		x = drawNumRight(stage+1, x, 68, 12, 16*1-12, 16*1-3);
+		// "-"
+			  drawLetter(38,      x, 68, 12, 2,  16*1-12, 16*1-3, rpbuf);
+		x += 12*1.7f;
+		if ( scene >= 10 ) {
+		  drawLetter('E'-'A'+10, x, 68, 12, 2, 16*1-12, 16*1-3, rpbuf);
+		  return;
+		}
+	  }
+	  drawNumRight(scene+1, x, 68, 12, 16*1-12, 16*1-3);
   }
-  drawNumRight(scene+1, 124, y, 24, 16*1-12, 16*1-3);
   if ( hsScene >= 0 ) {
-    y = SCENE_STAT_SIZE;
-    y = drawNumRight(stage+1, SCENE_STAT_X, y, SCENE_STAT_SIZE, 16*1-12, 16*1-3);
-    drawLetter(38, SCENE_STAT_X, y, SCENE_STAT_SIZE, 3,  16*1-12, 16*1-3, rpbuf);
-    y += SCENE_STAT_SIZE*1.7f;
-    y = drawNumRight(hsScene+1, SCENE_STAT_X, y, SCENE_STAT_SIZE, 16*1-12, 16*1-3);
-    y += SCENE_STAT_SIZE*1.7f*2;
-    y = drawNumRight(hsScSc, SCENE_STAT_X, y, SCENE_STAT_SIZE, 16*1-12, 16*1-3);
-    y += SCENE_STAT_SIZE*1.7f;
+	static const int SceneStatSize = 9;
+	static const int SceneStatY = 34*3;
+    int x = 40+SceneStatSize;
+    x = drawNumRight(stage+1, x, SceneStatY, SceneStatSize, 16*1-12, 16*1-3);
+    drawLetter(38, x, SceneStatY, SceneStatSize, 2,  16*1-12, 16*1-3, rpbuf);
+    x += SceneStatSize*1.7f;
+    x = drawNumRight(hsScene+1, x, SceneStatY, SceneStatSize, 16*1-12, 16*1-3);
+    x += SceneStatSize*1.7f*2;
+    x = drawNumRight(hsScSc, x, SceneStatY, SceneStatSize, 16*1-12, 16*1-3);
+    x += SceneStatSize*1.7f;
     if ( hsOfs >= 0 ) {
-      drawLetter(39, SCENE_STAT_X, y, SCENE_STAT_SIZE, 3,  16*2-12, 16*2-3, rpbuf);
-      y += SCENE_STAT_SIZE*1.7f;
-      drawNumRight(hsOfs, SCENE_STAT_X, y, SCENE_STAT_SIZE, 16*2-12, 16*2-3);
+      drawLetter(39, x, SceneStatY, SceneStatSize, 2,  16*2-12, 16*2-3, rpbuf);
+      x += SceneStatSize*1.7f;
+      drawNumRight(hsOfs, x, SceneStatY, SceneStatSize, 16*2-12, 16*2-3);
     } else {
-      drawLetter(38, SCENE_STAT_X, y, SCENE_STAT_SIZE, 3,  16*4-12, 16*4-3, rpbuf);
-      y += SCENE_STAT_SIZE*1.7f;
-      drawNumRight(-hsOfs, SCENE_STAT_X, y, SCENE_STAT_SIZE, 16*4-12, 16*4-3);
+      drawLetter(38, x, SceneStatY, SceneStatSize, 2,  16*4-12, 16*4-3, rpbuf);
+      x +=SceneStatSize*1.7f;
+      drawNumRight(-hsOfs, x, SceneStatY, SceneStatSize, 16*4-12, 16*4-3);
     }
   }
 }
@@ -277,7 +286,7 @@ int initTitleAtr() {
 void drawTitle() {
   int i;
   for ( i=0 ; i<7 ; i++ ) {
-    drawSprite(i, 162+i*46, 16);
+    drawSprite(i, ((320-(7*40)-(6*6))/2)+(i*46), 16);
   }
 }
 

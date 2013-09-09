@@ -22,6 +22,10 @@ public class Helper {
 	private int pressedB;
 	private int pressedStart;
 	private int pressedSelect;
+	private int pressedUP;
+	private int pressedDOWN;
+	private int pressedLEFT;
+	private int pressedRIGHT;
 	private Helper() {
 	}
 	
@@ -60,6 +64,21 @@ public class Helper {
 		case KeyEvent.KEYCODE_BUTTON_SELECT:
 			this.pressedSelect--;
 			break;
+		case KeyEvent.KEYCODE_Z:
+			this.pressedA--;
+			break;
+		case KeyEvent.KEYCODE_X:
+			this.pressedB--;
+			break;
+		case KeyEvent.KEYCODE_A:
+			this.pressedStart--;
+			break;
+		case KeyEvent.KEYCODE_S:
+			this.pressedSelect--;
+			break;
+		case KeyEvent.KEYCODE_ENTER:
+			this.pressedA--;
+			break;
 		}
 	}
 	public void onKeyDownI(int keyCode)
@@ -76,6 +95,21 @@ public class Helper {
 			break;
 		case KeyEvent.KEYCODE_BUTTON_SELECT:
 			this.pressedSelect++;
+			break;
+		case KeyEvent.KEYCODE_Z:
+			this.pressedA++;
+			break;
+		case KeyEvent.KEYCODE_X:
+			this.pressedB++;
+			break;
+		case KeyEvent.KEYCODE_A:
+			this.pressedStart++;
+			break;
+		case KeyEvent.KEYCODE_S:
+			this.pressedSelect++;
+			break;
+		case KeyEvent.KEYCODE_ENTER:
+			this.pressedA++;
 			break;
 		}
 	}

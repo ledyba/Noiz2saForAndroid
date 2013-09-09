@@ -41,6 +41,10 @@ static const char *BARRAGE_DIR_NAME[] = {
   "zako", "middle", "boss"
 };
 
+#ifndef ANDROID
+#define readBulletMLFiles(a,b) 0
+#else
+
 static int readBulletMLFiles(const char *dirPath, Barrage brg[]) {
 	int i = 0;
 	char fileName[256];
@@ -57,14 +61,15 @@ static int readBulletMLFiles(const char *dirPath, Barrage brg[]) {
 		strcpy(fileName, dirPath);
 		strcat(fileName, "/");
 		strcat(fileName, dir);
-		fprintf(stdout, "Opening...: %s\n", fileName);
+		//fprintf(stdout, "Opening...: %s\n", fileName);
 		brg[i].bulletml = new BulletMLParserTinyXML(fileName);
 		brg[i].bulletml->build(); i++;
-		fprintf(stdout, "XML load: %s\n", fileName);
+		//fprintf(stdout, "XML load: %s\n", fileName);
 	}
 	AAssetDir_close(di);
 	return i;
 }
+#endif
 
 static unsigned int rnd;
 
@@ -72,7 +77,7 @@ void initBarragemanager() {
   fprintf(stdout, "initBarragemanager...");
   for ( int i=0 ; i<BARRAGE_TYPE_NUM ; i++ ) {
     barragePatternNum[i] = readBulletMLFiles(BARRAGE_DIR_NAME[i], barragePattern[i]);
-    printf("--------\n");
+    fprintf(stdout, "--------\n");
     for ( int j=0 ; j<barragePatternNum[i] ; j++ ) {
       barragePattern[i][j].type = i;
     }

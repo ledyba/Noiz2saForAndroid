@@ -50,7 +50,7 @@ static char *spriteFile[SPRITE_NUM] = {
   "title_s.amr", "title_a.amr",
 };
 
-Uint8 *keys;
+const Uint8* keys;
 
 static void loadSprites() {
   SDL_Surface *img;
@@ -68,15 +68,19 @@ static void loadSprites() {
       exit(1);
     }
     sprite[i] = SDL_ConvertSurface(img, video->format, 0);
-    SDL_SetColorKey(sprite[i], 0, 0);
+    SDL_SetColorKey(sprite[i], SDL_TRUE, 0);
+    fprintf(stdout, "Sprite loaded. : %s\n", name);
   }
   color[0].r = color[0].g = color[0].b = 255;
   SDL_SetPaletteColors(video->format->palette, color, 0, 1);
+  fprintf(stdout, "All sprites loaded\n");
 }
 
 void drawSprite(int n, int x, int y) {
   SDL_Rect pos;
   pos.x = x; pos.y = y;
+  pos.w = sprite[n]->w;
+  pos.h = sprite[n]->h;
   SDL_BlitSurface(sprite[n], NULL, video, &pos);
 }
 
@@ -92,6 +96,8 @@ static void initPalette() {
   SDL_SetPaletteColors(layer->format->palette, color, 0, 256);
   SDL_SetPaletteColors(lpanel->format->palette, color, 0, 256);
   SDL_SetPaletteColors(rpanel->format->palette, color, 0, 256);
+  SDL_SetColorKey(lpanel, SDL_TRUE, SDL_MapRGB(lpanel->format, 255, 255, 255));
+  SDL_SetColorKey(rpanel, SDL_TRUE, SDL_MapRGB(rpanel->format, 255, 255, 255));
 }
 
 static int lyrSize;
@@ -133,6 +139,14 @@ void initSDL(int window_) {
   Uint8 const videoBpp = BPP;
   Uint32 const videoFlags = (window_) ? 0 : SDL_WINDOW_FULLSCREEN;
 
+  SDL_Rect displayRect;
+  if( SDL_GetDisplayBounds(0, &displayRect) != 0 ){
+	    fprintf(stderr, "Unable to get display rect: %s\n", SDL_GetError());
+	    SDL_Quit();
+	    exit(1);
+  }
+  fprintf(stdout, "Display: %dx%dx%dx%d\n", displayRect.x, displayRect.y, displayRect.w, displayRect.h);
+
   if( (window = SDL_CreateWindow(CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, videoFlags)) == NULL )
   {
 	    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
@@ -167,14 +181,15 @@ void initSDL(int window_) {
   layerClearRect.w = LAYER_WIDTH;
   layerClearRect.h = LAYER_HEIGHT;
   lpanelRect.x = 0;
-  lpanelRect.y = (SCREEN_HEIGHT-PANEL_HEIGHT)/2;
+  lpanelRect.y = 0;//(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
   rpanelRect.x = SCREEN_WIDTH-PANEL_WIDTH;
-  rpanelRect.y = (SCREEN_HEIGHT-PANEL_HEIGHT)/2;
+  rpanelRect.y = 0;//(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
   lpanelRect.w = rpanelRect.w = PANEL_WIDTH;
-  lpanelRect.h = rpanelRect.h = PANEL_HEIGHT;
+  lpanelRect.h = PANEL_HEIGHT;
+  rpanelRect.h = PANEL_HEIGHT*2;
   panelClearRect.x = panelClearRect.y = 0;
   panelClearRect.w = PANEL_WIDTH;
-  panelClearRect.h = PANEL_HEIGHT;
+  panelClearRect.h = PANEL_HEIGHT*2;
 
   pitch = layer->pitch/(videoBpp/8);
   buf = (LayerBit*)layer->pixels;
@@ -208,12 +223,13 @@ void blendScreen() {
 
 void flipScreen() {
   SDL_BlitSurface(layer, NULL, video, &layerRect);
-  SDL_BlitSurface(lpanel, NULL, video, &lpanelRect);
-  SDL_BlitSurface(rpanel, NULL, video, &rpanelRect);
-  SDL_BlitSurface(video, NULL, windowSurface, &screenRect);
-  if ( status == TITLE ) {
+  if( status != TITLE ){
+    SDL_BlitSurface(lpanel, NULL, video, &lpanelRect);
+    SDL_BlitSurface(rpanel, NULL, video, &rpanelRect);
+  }else {
     drawTitle();
   }
+  SDL_BlitSurface(video, NULL, windowSurface, &screenRect);
   SDL_UpdateWindowSurface( window );
 }
 
@@ -222,11 +238,11 @@ void clearScreen() {
 }
 
 void clearLPanel() {
-  SDL_FillRect(lpanel, &panelClearRect, 0);
+  SDL_FillRect(lpanel, NULL, 0);
 }
 
 void clearRPanel() {
-  SDL_FillRect(rpanel, &panelClearRect, 0);
+  SDL_FillRect(rpanel, NULL, 0);
 }
 
 void smokeScreen() {
@@ -484,11 +500,19 @@ void drawBoxPanel(int x, int y, int width, int height,
 
 // Draw the numbers.
 int drawNum(int n, int x ,int y, int s, int c1, int c2) {
+  int n2 = n;
+  int factor = 1;
+  while(n2 >= 10){
+	 n2 /= 10;
+	 factor *= 10;
+  }
+
   for ( ; ; ) {
-    drawLetter(n%10, x, y, s, 1, c1, c2, lpbuf);
-    y += s*1.7f;
-    n /= 10;
-    if ( n <= 0 ) break;
+    drawLetter(n/factor, x, y, s, 2, c1, c2, lpbuf);
+    x += s*1.7f;
+    n %= factor;
+    factor /= 10;
+    if ( factor < 1 ) break;
   }
   return y;
 }
@@ -499,16 +523,16 @@ int drawNumRight(int n, int x ,int y, int s, int c1, int c2) {
     nd = (int)(n/d);
     if ( nd > 0 || drawn ) {
       n -= d*nd;
-      drawLetter(nd%10, x, y, s, 3, c1, c2, rpbuf);
-      y += s*1.7f;
+      drawLetter(nd%10, x, y, s, 2, c1, c2, rpbuf);
+      x += s*1.7f;
       drawn = 1;
     }
   }
   if ( !drawn ) {
-    drawLetter(0, x, y, s, 3, c1, c2, rpbuf);
-    y += s*1.7f;
+    drawLetter(0, x, y, s, 2, c1, c2, rpbuf);
+    x += s*1.7f;
   }
-  return y;
+  return x;
 }
 
 int drawNumCenter(int n, int x ,int y, int s, int c1, int c2) {

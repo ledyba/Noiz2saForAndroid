@@ -12,12 +12,12 @@
 #include "SDL.h"
 #include "vector.h"
 
-#define SCREEN_WIDTH 640
+#define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 480
 #define LAYER_WIDTH 320
 #define LAYER_HEIGHT 480
-#define PANEL_WIDTH 160
-#define PANEL_HEIGHT 480
+#define PANEL_WIDTH 320
+#define PANEL_HEIGHT 128
 
 #define SCAN_WIDTH 320
 #define SCAN_HEIGHT 480
@@ -40,7 +40,7 @@ extern int windowMode;
 extern LayerBit *l1buf, *l2buf;
 extern LayerBit *buf;
 extern LayerBit *lpbuf, *rpbuf;
-extern Uint8 *keys;
+extern const Uint8* keys;
 extern SDL_Joystick *stick;
 extern int buttonReversed;
 extern int brightness;

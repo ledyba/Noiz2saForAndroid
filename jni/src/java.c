@@ -57,14 +57,14 @@ void JNICALL Java_org_ledyba_noiz2sa_Helper_onLoadJNI(JNIEnv* env, jclass klass_
 
 AAssetManager* getAAssetManager()
 {
-	LOGD("getAAssetManager called.");
+	//LOGD("getAAssetManager called.");
 	JNIEnv* env = attachJavaVM();
-	LOGD("getAAssetManager / attatched: %p", env);
+	//LOGD("getAAssetManager / attatched: %p", env);
 	jmethodID getAssetManagerId =
 		(*env)->GetStaticMethodID(env, klass, "getAssetManager", "()Landroid/content/res/AssetManager;");
-	LOGD("getAAssetManager / method: %p", getAssetManagerId);
+	//LOGD("getAAssetManager / method: %p", getAssetManagerId);
 	if( getAssetManagerId ){
-		LOGD("getAssetManagerId: %p", getAssetManagerId);
+		//LOGD("getAssetManagerId: %p", getAssetManagerId);
 	}else{
 		LOGE("getAssetManagerId is null.");
 		detatchJavaVM();
@@ -72,9 +72,9 @@ AAssetManager* getAAssetManager()
 	}
 	AAssetManager* mgr =
 		AAssetManager_fromJava(env, (*env)->CallStaticObjectMethod(env, klass, getAssetManagerId));
-	LOGD("getAAssetManager / mgr: %p", mgr);
+	//LOGD("getAAssetManager / mgr: %p", mgr);
 	detatchJavaVM();
-	LOGD("getAAssetManager / detatched.");
+	//LOGD("getAAssetManager / detatched.");
 	return mgr;
 }
 
