@@ -130,88 +130,100 @@ static void makeSmokeBuf() {
 }
 
 void initSDL(int window_) {
-  if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
-    fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-    exit(1);
-  }
-  atexit(SDL_Quit);
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
+		exit(1);
+	}
+	atexit(SDL_Quit);
 
-  Uint8 const videoBpp = BPP;
-  Uint32 const videoFlags = (window_) ? 0 : SDL_WINDOW_FULLSCREEN;
+	Uint8 const videoBpp = BPP;
+	Uint32 const videoFlags = (window_) ? 0 : SDL_WINDOW_FULLSCREEN;
 
-  SDL_Rect displayRect;
-  if( SDL_GetDisplayBounds(0, &displayRect) != 0 ){
-	    fprintf(stderr, "Unable to get display rect: %s\n", SDL_GetError());
-	    SDL_Quit();
-	    exit(1);
-  }
-  fprintf(stdout, "Display: %dx%dx%dx%d\n", displayRect.x, displayRect.y, displayRect.w, displayRect.h);
+	SDL_Rect displayRect;
+	if (SDL_GetDisplayBounds(0, &displayRect) != 0) {
+		LOGE("Unable to get display rect: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(1);
+	}
+	LOGD("Display: %dx%dx%dx%d\n", displayRect.x, displayRect.y, displayRect.w,
+			displayRect.h);
 
-  if( (window = SDL_CreateWindow(CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, videoFlags)) == NULL )
-  {
-	    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
-	    SDL_Quit();
-	    exit(1);
-  }
+	if ((window = SDL_CreateWindow(CAPTION, SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, videoFlags))
+			== NULL) {
+		LOGE("Unable to create SDL screen: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(1);
+	}
 
-  if ( (windowSurface = SDL_GetWindowSurface(window)) == NULL ) {
-    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
-    SDL_Quit();
-    exit(1);
-  }
-  if ( (video = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, videoBpp, 0, 0, 0, 0)) == NULL ) {
-    fprintf(stderr, "Unable to create SDL screen: %s\n", SDL_GetError());
-    SDL_Quit();
-    exit(1);
-  }
-  screenRect.x = screenRect.y = 0;
-  screenRect.w = SCREEN_WIDTH; screenRect.h = SCREEN_HEIGHT;
-  SDL_PixelFormat* const pfrm = video->format;
-  if ( NULL == ( layer = SDL_CreateRGBSurface (0, LAYER_WIDTH, LAYER_HEIGHT, videoBpp, 0, 0, 0, 0)) ||
-       NULL == ( lpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH, PANEL_HEIGHT, videoBpp, 0, 0, 0, 0)) ||
-       NULL == ( rpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH, PANEL_HEIGHT, videoBpp, 0, 0, 0, 0)) ) {
-      fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
-      exit(1);
-  }
-  layerRect.x = (SCREEN_WIDTH-LAYER_WIDTH)/2;
-  layerRect.y = (SCREEN_HEIGHT-LAYER_HEIGHT)/2;
-  layerRect.w = LAYER_WIDTH;
-  layerRect.h = LAYER_HEIGHT;
-  layerClearRect.x = layerClearRect.y = 0;
-  layerClearRect.w = LAYER_WIDTH;
-  layerClearRect.h = LAYER_HEIGHT;
-  lpanelRect.x = 0;
-  lpanelRect.y = 0;//(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
-  rpanelRect.x = SCREEN_WIDTH-PANEL_WIDTH;
-  rpanelRect.y = 0;//(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
-  lpanelRect.w = rpanelRect.w = PANEL_WIDTH;
-  lpanelRect.h = PANEL_HEIGHT;
-  rpanelRect.h = PANEL_HEIGHT*2;
-  panelClearRect.x = panelClearRect.y = 0;
-  panelClearRect.w = PANEL_WIDTH;
-  panelClearRect.h = PANEL_HEIGHT*2;
+	if ((windowSurface = SDL_GetWindowSurface(window)) == NULL) {
+		LOGE("Unable to create SDL screen: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(1);
+	}
+	if ((video = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, videoBpp,
+			0, 0, 0, 0)) == NULL) {
+		LOGE("Unable to create SDL screen: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(1);
+	}
+	screenRect.x = screenRect.y = 0;
+	screenRect.w = SCREEN_WIDTH;
+	screenRect.h = SCREEN_HEIGHT;
+	SDL_PixelFormat* const pfrm = video->format;
+	if ( NULL
+			== (layer = SDL_CreateRGBSurface(0, LAYER_WIDTH, LAYER_HEIGHT,
+					videoBpp, 0, 0, 0, 0))
+			||
+			NULL
+					== (lpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH,
+							PANEL_HEIGHT, videoBpp, 0, 0, 0, 0))
+			||
+			NULL
+					== (rpanel = SDL_CreateRGBSurface(0, PANEL_WIDTH,
+							PANEL_HEIGHT, videoBpp, 0, 0, 0, 0))) {
+		LOGE("Couldn't create surface: %s\n", SDL_GetError());
+		exit(1);
+	}
+	layerRect.x = (SCREEN_WIDTH - LAYER_WIDTH) / 2;
+	layerRect.y = (SCREEN_HEIGHT - LAYER_HEIGHT) / 2;
+	layerRect.w = LAYER_WIDTH;
+	layerRect.h = LAYER_HEIGHT;
+	layerClearRect.x = layerClearRect.y = 0;
+	layerClearRect.w = LAYER_WIDTH;
+	layerClearRect.h = LAYER_HEIGHT;
+	lpanelRect.x = 0;
+	lpanelRect.y = 0; //(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
+	rpanelRect.x = SCREEN_WIDTH - PANEL_WIDTH;
+	rpanelRect.y = 0; //(SCREEN_HEIGHT-PANEL_HEIGHT)/2;
+	lpanelRect.w = rpanelRect.w = PANEL_WIDTH;
+	lpanelRect.h = PANEL_HEIGHT;
+	rpanelRect.h = PANEL_HEIGHT * 2;
+	panelClearRect.x = panelClearRect.y = 0;
+	panelClearRect.w = PANEL_WIDTH;
+	panelClearRect.h = PANEL_HEIGHT * 2;
 
-  pitch = layer->pitch/(videoBpp/8);
-  buf = (LayerBit*)layer->pixels;
-  ppitch = lpanel->pitch/(videoBpp/8);
-  lpbuf = (LayerBit*)lpanel->pixels;
-  rpbuf = (LayerBit*)rpanel->pixels;
+	pitch = layer->pitch / (videoBpp / 8);
+	buf = (LayerBit*) layer->pixels;
+	ppitch = lpanel->pitch / (videoBpp / 8);
+	lpbuf = (LayerBit*) lpanel->pixels;
+	rpbuf = (LayerBit*) rpanel->pixels;
 
-  initPalette();
-  makeSmokeBuf();
-  clearLPanel();
-  clearRPanel();
+	initPalette();
+	makeSmokeBuf();
+	clearLPanel();
+	clearRPanel();
 
-  loadSprites();
+	loadSprites();
 
- // SDL_WM_SetCaption(CAPTION, NULL);
-  SDL_ShowCursor(SDL_DISABLE);
-  SDL_SetWindowGrab(window, 1);
-  //SDL_WM_GrabInput(SDL_GRAB_ON);
+	// SDL_WM_SetCaption(CAPTION, NULL);
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetWindowGrab(window, 1);
+	//SDL_WM_GrabInput(SDL_GRAB_ON);
 }
 
 void closeSDL() {
-  SDL_ShowCursor(SDL_ENABLE);
+	SDL_ShowCursor(SDL_ENABLE);
 }
 
 void blendScreen() {

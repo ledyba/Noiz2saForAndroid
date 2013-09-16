@@ -263,63 +263,96 @@ static int pPrsd = 1;
 
 
 int main(int argc, char *argv[]) {
-  int done = 0;
-  long prvTickCount = 0;
-  int i;
-  int btn;
-  SDL_Event event;
-  long nowTick;
-  int frame;
+	int done = 0;
+	long prvTickCount = 0;
+	int i;
+	int btn;
+	SDL_Event event;
+	long nowTick;
+	int frame;
 
-  parseArgs(argc, argv);
+	parseArgs(argc, argv);
 
-  initDegutil();
-  initSDL(windowMode);
+	initDegutil();
+	initSDL(windowMode);
   
-  if ( !noSound ) initSound();
-  initFirst();
-  initTitle();
+	if ( !noSound ) initSound();
+	initFirst();
+	initTitle();
 
-  while ( !done ) {
-    SDL_PollEvent(&event);
-    keys = SDL_GetKeyboardState(NULL);
-    if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED || event.type == SDL_QUIT ) done = 1;
-    if ( keys[SDL_SCANCODE_P] == SDL_PRESSED ) {
-      if ( !pPrsd ) {
-	if ( status == IN_GAME ) {
-	  status = PAUSE;
-	} else if ( status == PAUSE ) {
-	  status = IN_GAME;
+	while ( !done ) {
+		while(SDL_PollEvent(&event)){
+			switch(event.type){
+			case SDL_QUIT:
+				done = 1;
+				break;
+			case  SDL_FINGERMOTION:
+				onTapMoveAttr(
+					event.tfinger.touchId,
+					event.tfinger.fingerId,
+					event.tfinger.x,
+					event.tfinger.y,
+					event.tfinger.dx,
+					event.tfinger.dy);
+				break;
+			case SDL_FINGERDOWN:
+				onTapDownAttr(
+					event.tfinger.touchId,
+					event.tfinger.fingerId,
+					event.tfinger.x,
+					event.tfinger.y,
+					event.tfinger.dx,
+					event.tfinger.dy);
+				break;
+			case SDL_FINGERUP:
+				onTapUpAttr(
+					event.tfinger.touchId,
+					event.tfinger.fingerId,
+					event.tfinger.x,
+					event.tfinger.y,
+					event.tfinger.dx,
+					event.tfinger.dy);
+				break;
+			}
+		}
+		keys = SDL_GetKeyboardState(NULL);
+		if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) done = 1;
+		if ( keys[SDL_SCANCODE_P] == SDL_PRESSED ) {
+			if ( !pPrsd ) {
+				if ( status == IN_GAME ) {
+					status = PAUSE;
+				} else if ( status == PAUSE ) {
+					status = IN_GAME;
+				}
+			}
+			pPrsd = 1;
+		} else {
+			pPrsd = 0;
+		}
+
+		nowTick = SDL_GetTicks();
+		frame = (int)(nowTick-prvTickCount) / interval;
+		if ( frame <= 0 ) {
+			frame = 1;
+			SDL_Delay(prvTickCount+interval-nowTick);
+			if ( accframe ) {
+				prvTickCount = SDL_GetTicks();
+			} else {
+				prvTickCount += interval;
+			}
+		} else if ( frame > 5 ) {
+			frame = 5;
+			prvTickCount = nowTick;
+		} else {
+			prvTickCount += frame*interval;
+		}
+		for ( i=0 ; i<frame ; i++ ) {
+			move();
+			tick++;
+		}
+		smokeScreen();
+		draw();
+		flipScreen();
 	}
-      }
-      pPrsd = 1;
-    } else {
-      pPrsd = 0;
-    }
-
-    nowTick = SDL_GetTicks();
-    frame = (int)(nowTick-prvTickCount) / interval;
-    if ( frame <= 0 ) {
-      frame = 1;
-      SDL_Delay(prvTickCount+interval-nowTick);
-      if ( accframe ) {
-	prvTickCount = SDL_GetTicks();
-      } else {
-	prvTickCount += interval;
-      }
-    } else if ( frame > 5 ) {
-      frame = 5;
-      prvTickCount = nowTick;
-    } else {
-      prvTickCount += frame*interval;
-    }
-    for ( i=0 ; i<frame ; i++ ) {
-      move();
-      tick++;
-    }
-    smokeScreen();
-    draw();
-    flipScreen();
-  }
-  quitLast();
+	quitLast();
 }

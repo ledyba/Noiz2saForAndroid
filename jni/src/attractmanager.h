@@ -47,3 +47,7 @@ void moveTitleMenu();
 void movePause();
 void drawPause();
 void drawTitle();
+
+void onTapUpAttr  (int didx, int fidx, float x, float y, float dx, float dy);
+void onTapDownAttr(int didx, int fidx, float x, float y, float dx, float dy);
+void onTapMoveAttr(int didx, int fidx, float x, float y, float dx, float dy);

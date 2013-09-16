@@ -2,8 +2,6 @@ package org.ledyba.noiz2sa;
 
 import org.libsdl.app.SDLActivity;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -12,7 +10,9 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 
 public class Noiz2saActivity extends SDLActivity {
@@ -24,7 +24,6 @@ public class Noiz2saActivity extends SDLActivity {
 		return super.onTouchEvent(event);
 	}
 	
-	@SuppressLint("NewApi")
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		if(event.getRepeatCount() == 0){
@@ -46,7 +45,7 @@ public class Noiz2saActivity extends SDLActivity {
 		}
 		return super.onGenericMotionEvent(event);
 	}
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

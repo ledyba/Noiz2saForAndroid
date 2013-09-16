@@ -277,7 +277,7 @@ static int mnp;
 
 int initTitleAtr() {
   stopMusic();
-  titleCnt = 0;
+  titleCnt = 0; //�����ȥ������ܥ�����礭������
   slcStg = hiScore.stage;
   mnp = 0;
   return slcStg;
@@ -300,39 +300,40 @@ static int stgMv[STAGE_NUM+ENDLESS_STAGE_NUM+1][4] = {
 };
 
 void moveTitleMenu() {
-  int pad = getPadState();
-  int btn = getButtonState();
-  int p = -1;
-  int sm;
-  if ( pad & PAD_DOWN ) {
-    p = 2;
-  } else if ( pad & PAD_UP ) {
-    p = 0;
-  } else if ( pad & PAD_RIGHT ) {
-    p = 1;
-  } else if ( pad & PAD_LEFT ) {
-    p = 3;
-  } else if ( btn == 0 ) {
-    mnp = 1;
-  }
-  if ( mnp && p >= 0 ) {
-    mnp = 0;
-    sm = stgMv[slcStg][p];
-    slcStg += sm;
-    if ( sm != 0 ) {
-      initTitleStage(slcStg);
-    }
-    titleCnt = 16;
-  }
-  if ( mnp && (btn & PAD_BUTTON1) ) {
-    if ( slcStg == STAGE_NUM+ENDLESS_STAGE_NUM ) {
-      quitLast();
-      return;
-    }
-    hiScore.stage = slcStg;
-    initGame(slcStg);
-  }
-  titleCnt++;
+	int pad = getPadState();
+	int btn = getButtonState();
+	int p = -1;
+	int sm;
+	if ( pad & PAD_DOWN ) {
+		p = 2;
+	} else if ( pad & PAD_UP ) {
+		p = 0;
+	} else if ( pad & PAD_RIGHT ) {
+		p = 1;
+	} else if ( pad & PAD_LEFT ) {
+		p = 3;
+	} else if ( btn == 0 ) {
+		mnp = 1; //��ö�������Ƥ��ʤ����֤����ʤ��ȼ�������Ԥ�ʤ����Ȥ�������������ѿ�
+	}
+	if ( mnp && p >= 0 ) {
+		mnp = 0;
+		sm = stgMv[slcStg][p];
+		slcStg += sm;
+		if ( sm != 0 ) {
+			initTitleStage(slcStg);
+		}
+		titleCnt = 16;
+	}
+	if ( mnp && (btn & PAD_BUTTON1) ) {
+		if (slcStg <= STAGE_NUM) {
+			hiScore.stage = slcStg;
+			initGame(slcStg);
+		}else if ( slcStg == STAGE_NUM+ENDLESS_STAGE_NUM ) {
+			quitLast();
+			return;
+		}
+	}
+	titleCnt++;
 }
 
 void drawTitleMenu() {
@@ -482,4 +483,53 @@ void drawPause() {
   if ( (psCnt&63) < 32 ) {
     drawStringBuf(psChr, 92, LAYER_HEIGHT/3, 20, 2, 16*2-10, 16*1-1, buf, 0);
   }
+}
+
+void onTapUpAttr(int didx, int fidx, float x, float y, float dx, float dy)
+{
+	LOGD("Up   %f %f", dx, dy);
+	switch ( status ) {
+	case TITLE:
+		break;
+	case IN_GAME:
+		break;
+	case GAMEOVER:
+		break;
+	case STAGE_CLEAR:
+		break;
+	case PAUSE:
+		break;
+	}
+}
+void onTapDownAttr(int didx, int fidx, float x, float y, float dx, float dy)
+{
+	LOGD("Down %f %f", dx, dy);
+	switch ( status ) {
+	case TITLE:
+		break;
+	case IN_GAME:
+		break;
+	case GAMEOVER:
+		break;
+	case STAGE_CLEAR:
+		break;
+	case PAUSE:
+		break;
+	}
+}
+void onTapMoveAttr(int didx, int fidx, float x, float y, float dx, float dy)
+{
+	LOGD("Move %f %f", dx, dy);
+	switch ( status ) {
+	case TITLE:
+		break;
+	case IN_GAME:
+		break;
+	case GAMEOVER:
+		break;
+	case STAGE_CLEAR:
+		break;
+	case PAUSE:
+		break;
+	}
 }

@@ -22,10 +22,8 @@ public class Helper {
 	private int pressedB;
 	private int pressedStart;
 	private int pressedSelect;
-	private int pressedUP;
-	private int pressedDOWN;
-	private int pressedLEFT;
-	private int pressedRIGHT;
+	private int pressedX;
+	private int pressedY;
 	private Helper() {
 	}
 	
@@ -47,7 +45,6 @@ public class Helper {
 		}
 	}
 	public static void onMotion(MotionEvent ev){
-		Log.e("Helper", "motion: "+ev.toString());
 		getInstance().onMotionI(ev);
 	}
 	private void onKeyUpI(int keyCode){
@@ -78,6 +75,18 @@ public class Helper {
 			break;
 		case KeyEvent.KEYCODE_ENTER:
 			this.pressedA--;
+			break;
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			this.pressedX++;
+			break;
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			this.pressedX--;
+			break;
+		case KeyEvent.KEYCODE_DPAD_UP:
+			this.pressedY++;
+			break;
+		case KeyEvent.KEYCODE_DPAD_DOWN:
+			this.pressedY--;
 			break;
 		}
 	}
@@ -111,6 +120,18 @@ public class Helper {
 		case KeyEvent.KEYCODE_ENTER:
 			this.pressedA++;
 			break;
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			this.pressedX--;
+			break;
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			this.pressedX++;
+			break;
+		case KeyEvent.KEYCODE_DPAD_UP:
+			this.pressedY--;
+			break;
+		case KeyEvent.KEYCODE_DPAD_DOWN:
+			this.pressedY++;
+			break;
 		}
 	}
 	public static void onKeyUp(int keyCode){
@@ -121,11 +142,13 @@ public class Helper {
 	}
 	public static float getX()
 	{
-		return getInstance().x_;
+		final float fx = getInstance().x_;
+		return Float.compare(0, fx) != 0 ? fx : getInstance().pressedX*1024*16;
 	}
 	public static float getY()
 	{
-		return getInstance().y_;
+		final float fy = getInstance().y_;
+		return Float.compare(0, fy) != 0 ? fy : getInstance().pressedY*1024*16;
 	}
 	public static int keyAPressed(){
 		return getInstance().pressedA;
