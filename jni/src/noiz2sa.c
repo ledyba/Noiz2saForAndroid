@@ -28,6 +28,7 @@
 #include "soundmanager.h"
 #include "attractmanager.h"
 
+#include "java.h"
 #include "log.h"
 
 static int noSound = 0;
@@ -50,7 +51,7 @@ void quitLast() {
   exit(1);
 }
 
-int status;
+enum GameMode status;
 
 static float stagePrm[STAGE_NUM+ENDLESS_STAGE_NUM+1][3] = {
   {13, 0.5f, 0.12f}, {2, 1.8f, 0.15f}, {3, 3.2f, 0.1f}, {90, 6.0f, 0.3f}, {5, 5.0f, 0.6f},
@@ -261,6 +262,15 @@ int interval = INTERVAL_BASE;
 int tick = 0;
 static int pPrsd = 1;
 
+static float winScale = -1;
+static void useScale()
+{
+	if(winScale < 0){
+		const float r = Window_getScale();
+		LOGD("Window scale: %f", r);
+		winScale = r;
+	}
+}
 
 int main(int argc, char *argv[]) {
 	int done = 0;
@@ -287,31 +297,34 @@ int main(int argc, char *argv[]) {
 				done = 1;
 				break;
 			case  SDL_FINGERMOTION:
+				useScale();
 				onTapMoveAttr(
 					event.tfinger.touchId,
 					event.tfinger.fingerId,
-					event.tfinger.x,
-					event.tfinger.y,
-					event.tfinger.dx,
-					event.tfinger.dy);
+					event.tfinger.x/winScale * SCREEN_WIDTH,
+					event.tfinger.y/winScale * SCREEN_HEIGHT,
+					event.tfinger.dx/winScale * SCREEN_WIDTH,
+					event.tfinger.dy/winScale * SCREEN_HEIGHT);
 				break;
 			case SDL_FINGERDOWN:
+				useScale();
 				onTapDownAttr(
 					event.tfinger.touchId,
 					event.tfinger.fingerId,
-					event.tfinger.x,
-					event.tfinger.y,
-					event.tfinger.dx,
-					event.tfinger.dy);
+					event.tfinger.x/winScale * SCREEN_WIDTH,
+					event.tfinger.y/winScale * SCREEN_HEIGHT,
+					event.tfinger.dx/winScale * SCREEN_WIDTH,
+					event.tfinger.dy/winScale * SCREEN_HEIGHT);
 				break;
 			case SDL_FINGERUP:
+				useScale();
 				onTapUpAttr(
 					event.tfinger.touchId,
 					event.tfinger.fingerId,
-					event.tfinger.x,
-					event.tfinger.y,
-					event.tfinger.dx,
-					event.tfinger.dy);
+					event.tfinger.x/winScale * SCREEN_WIDTH,
+					event.tfinger.y/winScale * SCREEN_HEIGHT,
+					event.tfinger.dx/winScale * SCREEN_WIDTH,
+					event.tfinger.dy/winScale * SCREEN_HEIGHT);
 				break;
 			}
 		}

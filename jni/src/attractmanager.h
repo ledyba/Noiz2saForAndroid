@@ -37,9 +37,11 @@ void initAttractManager();
 int initTitleAtr();
 void drawTitle();
 void drawTitleMenu();
+void requestGameoverEnd();
 void initGameoverAtr();
 void moveGameover();
 void drawGameover();
+void requestStageClearEnd();
 void initStageClearAtr();
 void moveStageClear();
 void drawStageClear();
@@ -48,6 +50,8 @@ void movePause();
 void drawPause();
 void drawTitle();
 
-void onTapUpAttr  (int didx, int fidx, float x, float y, float dx, float dy);
-void onTapDownAttr(int didx, int fidx, float x, float y, float dx, float dy);
-void onTapMoveAttr(int didx, int fidx, float x, float y, float dx, float dy);
+void onTapTitle(float x,float y, int onlySel);
+
+void onTapUpAttr  (SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy);
+void onTapDownAttr(SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy);
+void onTapMoveAttr(SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy);

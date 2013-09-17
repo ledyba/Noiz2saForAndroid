@@ -44,6 +44,7 @@ extern const Uint8* keys;
 extern SDL_Joystick *stick;
 extern int buttonReversed;
 extern int brightness;
+extern SDL_Rect displayRect;
 
 void initSDL(int window);
 void closeSDL();

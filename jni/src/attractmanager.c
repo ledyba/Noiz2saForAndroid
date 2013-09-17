@@ -21,6 +21,7 @@
 #include "brgmng_mtd.h"
 #include "soundmanager.h"
 #include "degutil.h"
+#include "ship.h"
 
 #ifndef ANDROID
 typedef int FILE;
@@ -241,34 +242,38 @@ void drawRPanel() {
 static int stageX[STG_BOX_NUM], stageY[STG_BOX_NUM];
 
 void initAttractManager() {
-  int i, j, x, y, s;
-  y = LAYER_HEIGHT/3+STG_BOX_SIZE/2;
-  s = 0;
-  for ( i=0 ; i<6 ; i++, y += STG_BOX_SIZE*1.2f ) {
-    x = STG_BOX_SIZE/2+STG_BOX_SIZE/2;
-    switch ( i ) {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      for ( j=0 ; j<=i ; j++, s++, x+=STG_BOX_SIZE*1.2f ) {
-	stageX[s] = x; stageY[s] = y;
-      }
-      break;
-    case 4:
-      for ( j=0 ; j<=2 ; j++, s++, x+=STG_BOX_SIZE*1.2f ) {
-	stageX[s] = x; stageY[s] = y;
-      }
-      x += STG_BOX_SIZE*1.2f;
-      stageX[s] = x; stageY[s] = y;
-      s++;
-      break;
-    case 5:
-      y += STG_BOX_SIZE/3;
-      stageX[s] = x; stageY[s] = y;
-      break;
-    }
-  }
+	int i, j, x, y, s;
+	y = LAYER_HEIGHT / 3 + STG_BOX_SIZE / 2;
+	s = 0;
+	for (i = 0; i < 6; i++, y += STG_BOX_SIZE * 1.2f) {
+		x = STG_BOX_SIZE / 2 + STG_BOX_SIZE / 2;
+		switch (i) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			for (j = 0; j <= i; j++, s++, x += STG_BOX_SIZE * 1.2f) {
+				stageX[s] = x;
+				stageY[s] = y;
+			}
+			break;
+		case 4:
+			for (j = 0; j <= 2; j++, s++, x += STG_BOX_SIZE * 1.2f) {
+				stageX[s] = x;
+				stageY[s] = y;
+			}
+			x += STG_BOX_SIZE * 1.2f;
+			stageX[s] = x;
+			stageY[s] = y;
+			s++;
+			break;
+		case 5:
+			y += STG_BOX_SIZE / 3;
+			stageX[s] = x;
+			stageY[s] = y;
+			break;
+		}
+	}
 }
 
 static int titleCnt;
@@ -276,18 +281,18 @@ static int slcStg;
 static int mnp;
 
 int initTitleAtr() {
-  stopMusic();
-  titleCnt = 0; //�����ȥ������ܥ�����礭������
-  slcStg = hiScore.stage;
-  mnp = 0;
-  return slcStg;
+	stopMusic();
+	titleCnt = 0; //�����ȥ������ܥ�����礭������
+	slcStg = hiScore.stage;
+	mnp = 0;
+	return slcStg;
 }
 
 void drawTitle() {
-  int i;
-  for ( i=0 ; i<7 ; i++ ) {
-    drawSprite(i, ((320-(7*40)-(6*6))/2)+(i*46), 16);
-  }
+	int i;
+	for (i = 0; i < 7; i++) {
+		drawSprite(i, ((320 - (7 * 40) - (6 * 6)) / 2) + (i * 46), 16);
+	}
 }
 
 static int stgMv[STAGE_NUM+ENDLESS_STAGE_NUM+1][4] = {
@@ -408,17 +413,48 @@ void drawTitleMenu() {
   }
 }
 
-static int goCnt;
+void onTapTitle(float x,float y, int onlySel)
+{
+	int sel = -1;
+	for (int i=0 ; i<STG_BOX_NUM ; i++ ) {
+		float const stX = stageX[i];
+		float const stY = stageY[i];
+		if( x >= stX && y >= stY && (x-stX) <= STG_BOX_SIZE && (y-stY) <= STG_BOX_SIZE){
+			sel = i;
+			slcStg = sel;
+			initTitleStage(slcStg);
+			titleCnt = 16;
+			break;
+		}
+	}
+	if( onlySel ) {
+		return;
+	}
+	if(sel < 0) {
+	} else if(sel <= STAGE_NUM) {
+		hiScore.stage = slcStg;
+		initGame(slcStg);
+	} else if(sel == STAGE_NUM+ENDLESS_STAGE_NUM) {
+		quitLast();
+	}
+}
 
+static int goCnt;
+static int gameoverEndRequested;
+void requestGameoverEnd()
+{
+	gameoverEndRequested = 1;
+}
 void initGameoverAtr() {
   goCnt = 0;
   mnp = 0;
+  gameoverEndRequested = 0;
   fadeMusic();
 }
 
 void moveGameover() {
-  int btn = getButtonState();
-  if ( goCnt > 900 || (goCnt > 128 && mnp && (btn & PAD_BUTTON1)) ) {
+  const int btn = getButtonState();
+  if (gameoverEndRequested || goCnt > 900 || (goCnt > 128 && mnp && (btn & PAD_BUTTON1)) ) {
     setHiScore();
     initTitle();
     return;
@@ -441,16 +477,23 @@ void drawGameover() {
 }
 
 static int scCnt;
+static int stageclearEndRequested;
+
+void requestStageClearEnd()
+{
+	stageclearEndRequested=1;
+}
 
 void initStageClearAtr() {
   scCnt = 0;
   mnp = 0;
+  stageclearEndRequested = 0;
   fadeMusic();
 }
 
 void moveStageClear() {
   int btn = getButtonState();
-  if ( scCnt > 900 || (scCnt > 128 && mnp && (btn & PAD_BUTTON1)) ) {
+  if (stageclearEndRequested || scCnt > 900 || (scCnt > 128 && mnp && (btn & PAD_BUTTON1)) ) {
     setHiScore();
     initTitle();
     return;
@@ -485,13 +528,76 @@ void drawPause() {
   }
 }
 
-void onTapUpAttr(int didx, int fidx, float x, float y, float dx, float dy)
+struct TouchSession {
+	SDL_TouchID touchId;
+	float startX;
+	float startY;
+	float lastX;
+	float lastY;
+	float totalX;
+	float totalY;
+};
+
+static struct TouchSession tsession[16];
+
+void onTapUpAttr(SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy)
 {
-	LOGD("Up   %f %f", dx, dy);
+	struct TouchSession* const sess = &tsession[fidx];
+	if(didx != sess->touchId){
+		LOGE("Touch id mismatched: %lld != %lld", didx, sess->touchId);
+		return;
+	}
+	sess->lastX = x;
+	sess->lastY = y;
+	sess->totalX += fabs(dx);
+	sess->totalY += fabs(dy);
+
+	float const total = sqrt(sess->totalX*sess->totalX + sess->totalY * sess->totalY);
+
+	LOGD("Up   %f %f", x, y);
+	switch ( status ) {
+	case TITLE: {
+		onTapTitle(x,y, !(total <= 30));
+		break;
+	}
+	case IN_GAME: {
+		LOGD("Move %f %f", dx, dy);
+		moveShipByTap(fidx, dx, dy);
+		endShipShotByTap(fidx);
+		break;
+	}
+	case GAMEOVER: {
+		if( total <= 30 ) {
+			requestGameoverEnd();
+		}
+		break;
+	}
+	case STAGE_CLEAR: {
+		if( total <= 30 ) {
+			requestStageClearEnd();
+		}
+		break;
+	}
+	case PAUSE: {
+		if( total <= 30 ) {
+			status = IN_GAME;
+		}
+		break;
+	}
+	}
+}
+void onTapDownAttr(SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy)
+{
+	struct TouchSession* const sess = &tsession[fidx];
+	sess->touchId = didx;
+	sess->lastX = sess->startX = x;
+	sess->lastY = sess->startY = y;
+	sess->totalX = sess->totalY = 0;
 	switch ( status ) {
 	case TITLE:
 		break;
 	case IN_GAME:
+		startShipShotByTap(fidx);
 		break;
 	case GAMEOVER:
 		break;
@@ -501,29 +607,23 @@ void onTapUpAttr(int didx, int fidx, float x, float y, float dx, float dy)
 		break;
 	}
 }
-void onTapDownAttr(int didx, int fidx, float x, float y, float dx, float dy)
+void onTapMoveAttr(SDL_TouchID const didx, int const fidx, float const x, float const y, float const dx, float const dy)
 {
-	LOGD("Down %f %f", dx, dy);
-	switch ( status ) {
-	case TITLE:
-		break;
-	case IN_GAME:
-		break;
-	case GAMEOVER:
-		break;
-	case STAGE_CLEAR:
-		break;
-	case PAUSE:
-		break;
+	struct TouchSession* const sess = &tsession[fidx];
+	if(didx != sess->touchId){
+		LOGE("Touch id mismatched: %lld != %lld", didx, sess->touchId);
+		return;
 	}
-}
-void onTapMoveAttr(int didx, int fidx, float x, float y, float dx, float dy)
-{
-	LOGD("Move %f %f", dx, dy);
+	sess->lastX = x;
+	sess->lastY = y;
+	sess->totalX += fabs(dx);
+	sess->totalY += fabs(dy);
 	switch ( status ) {
 	case TITLE:
+		onTapTitle(x,y, SDL_TRUE);
 		break;
 	case IN_GAME:
+		moveShipByTap(fidx, dx, dy);
 		break;
 	case GAMEOVER:
 		break;

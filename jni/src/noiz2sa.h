@@ -21,15 +21,17 @@
 
 #define NOT_EXIST -999999
 
-extern int status;
+enum GameMode {
+	TITLE=0,
+	IN_GAME=1,
+	GAMEOVER=2,
+	STAGE_CLEAR=3,
+	PAUSE=4
+};
+
+extern enum GameMode status;
 extern int interval;
 extern int tick;
-
-#define TITLE 0
-#define IN_GAME 1
-#define GAMEOVER 2
-#define STAGE_CLEAR 3
-#define PAUSE 4
 
 void quitLast();
 void initTitleStage(int stg);

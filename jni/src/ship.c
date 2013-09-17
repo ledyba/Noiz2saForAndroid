@@ -40,6 +40,7 @@ void initShip() {
   ship.cnt = 0; ship.shotCnt = -1;
   ship.speed = SHIP_SPEED;
   ship.invCnt = SHIP_INVINCIBLE_CNT_BASE*(100-scene)/100;
+  ship.tapCount = 0;
   if ( ship.invCnt < 0 ) ship.invCnt = 0;
 }
 
@@ -53,76 +54,99 @@ static int shipMv[8][2] = {
 };
 
 void moveShip() {
-  int pad = getPadState();
-  int btn = getButtonState();
-  int sd = -1;
-  if ( pad & PAD_RIGHT ) {
-    sd = 2;
-  }
-  if ( pad & PAD_LEFT ) {
-    sd = 6;
-  }
-  if ( pad & PAD_DOWN ) {
-    switch ( sd ) {
-    case 2:
-      sd = 3;
-      break;
-    case 6:
-      sd = 5;
-      break;
-    default:
-      sd = 4;
-      break;
-    }
-  }
-  if ( pad & PAD_UP ) {
-    switch ( sd ) {
-    case 2:
-      sd = 1;
-      break;
-    case 6:
-      sd = 7;
-      break;
-    default:
-      sd = 0;
-      break;
-    }
-  }
-  if ( btn & PAD_BUTTON1 ) {
-    if ( ship.shotCnt < 0 && status == IN_GAME ) {
-      addShot(&(ship.pos));
-      ship.shotCnt = SHOT_INTERVAL;
-    }
-  }
-  ship.shotCnt--;
-  if ( btn & PAD_BUTTON2 ) {
-    if ( ship.speed > SHIP_SLOW_SPEED ) {
-      ship.speed -= SHIP_SLOW_DOWN;
-    }
-  } else {
-    if ( ship.speed < SHIP_SPEED ) {
-      ship.speed += SHIP_SLOW_DOWN;
-    }
-  }
+	int pad = getPadState();
+	int btn = getButtonState();
+	int sd = -1;
+	if (pad & PAD_RIGHT) {
+		sd = 2;
+	}
+	if (pad & PAD_LEFT) {
+		sd = 6;
+	}
+	if (pad & PAD_DOWN) {
+		switch (sd) {
+		case 2:
+			sd = 3;
+			break;
+		case 6:
+			sd = 5;
+			break;
+		default:
+			sd = 4;
+			break;
+		}
+	}
+	if (pad & PAD_UP) {
+		switch (sd) {
+		case 2:
+			sd = 1;
+			break;
+		case 6:
+			sd = 7;
+			break;
+		default:
+			sd = 0;
+			break;
+		}
+	}
+	if ((btn & PAD_BUTTON1) || (ship.tapCount > 0)) {
+		if (ship.shotCnt < 0 && status == IN_GAME) {
+			addShot(&(ship.pos));
+			ship.shotCnt = SHOT_INTERVAL;
+		}
+	}
+	ship.shotCnt--;
+	if (btn & PAD_BUTTON2) {
+		if (ship.speed > SHIP_SLOW_SPEED) {
+			ship.speed -= SHIP_SLOW_DOWN;
+		}
+	} else {
+		if (ship.speed < SHIP_SPEED) {
+			ship.speed += SHIP_SLOW_DOWN;
+		}
+	}
 
-  if ( sd >= 0 ) {
-    ship.pos.x += (ship.speed*shipMv[sd][0])>>8;
-    ship.pos.y += (ship.speed*shipMv[sd][1])>>8;
-    if ( ship.pos.x < SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH ) {
-      ship.pos.x = SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH;
-    } else if ( ship.pos.x > SCAN_WIDTH_8-SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH ) {
-      ship.pos.x = SCAN_WIDTH_8-SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH;
-    }
-    if ( ship.pos.y < SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH ) {
-      ship.pos.y = SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH;
-    } else if ( ship.pos.y > SCAN_HEIGHT_8-SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH ) {
-      ship.pos.y = SCAN_HEIGHT_8-SHIP_SCAN_WIDTH*SHIP_SCREEN_EDGE_WIDTH;
-    }
-  }
+	if (sd >= 0) {
+		ship.pos.x += (ship.speed * shipMv[sd][0]) >> 8;
+		ship.pos.y += (ship.speed * shipMv[sd][1]) >> 8;
+		if (ship.pos.x < SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+			ship.pos.x = SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+		} else if (ship.pos.x
+				> SCAN_WIDTH_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+			ship.pos.x =
+					SCAN_WIDTH_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+		}
+		if (ship.pos.y < SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+			ship.pos.y = SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+		} else if (ship.pos.y
+				> SCAN_HEIGHT_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+			ship.pos.y = SCAN_HEIGHT_8
+					- SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+		}
+	}
 
-  ship.cnt++;
-  if ( ship.invCnt > 0 ) ship.invCnt--;
+	ship.cnt++;
+	if (ship.invCnt > 0)
+		ship.invCnt--;
 }
+void moveShipByTap(const int fingerId, float const dx, float const dy)
+{
+	LOGE("%fx%f / %fx%f", dx, dy, ship.pos.x/256.0f, ship.pos.y/256.0f);
+
+	int const ddx = (int)((dx/SCAN_WIDTH*LAYER_WIDTH)*256);
+	int const ddy = (int)((dy/SCAN_HEIGHT*LAYER_HEIGHT)*256);
+	ship.pos.x += ddx;
+	ship.pos.y += ddy;
+}
+void startShipShotByTap(int const fingerId)
+{
+	ship.tapCount++;
+}
+void endShipShotByTap(int const fingerId)
+{
+	ship.tapCount--;
+}
+
 
 #define SHIP_DRAW_WIDTH 6
 #define SHIP_DRUM_WIDTH 15

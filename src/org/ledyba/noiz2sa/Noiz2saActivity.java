@@ -10,9 +10,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 
 public class Noiz2saActivity extends SDLActivity {
@@ -45,14 +43,31 @@ public class Noiz2saActivity extends SDLActivity {
 		}
 		return super.onGenericMotionEvent(event);
 	}
+
+	private static Noiz2saActivity self = null;
+	public static Noiz2saActivity getInstance(){
+		return self;
+	}
+	public static float getScale(){
+		if( self == null ) {
+			Log.e(TAG, "Oops. Window Not initialized.");
+			return 1;
+		}else{
+			Log.d(TAG, "Window scale (Java): "+self.scale_);
+			return self.scale_;
+		}
+	}
+	private float scale_;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		self = this;
 		final Display disp = getWindowManager().getDefaultDisplay();
-		final float scale = Math.min(disp.getWidth()/320.f, disp.getHeight()/480.f);
-		final int w = (int)(320*scale);
-		final int h = (int)(480*scale);
+		this.scale_ = Math.min(disp.getWidth()/320.f, disp.getHeight()/480.f);
+		
+		final int w = (int)(320*this.scale_);
+		final int h = (int)(480*this.scale_);
 		
 		final FrameLayout fm = (FrameLayout)this.findViewById(android.R.id.content);
 		final ViewGroup abs = (ViewGroup)fm.getChildAt(0);

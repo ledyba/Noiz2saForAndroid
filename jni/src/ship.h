@@ -16,12 +16,18 @@ typedef struct {
   int cnt, shotCnt;
   int speed;
   int invCnt;
+
+  int tapCount;
 } Ship;
 
 extern Ship ship;
 
-void initShip();
-void moveShip();
-void drawShip();
-void destroyShip();
-int getPlayerDeg(int x, int y);
+extern void initShip();
+extern void moveShip();
+extern void drawShip();
+extern void destroyShip();
+extern int getPlayerDeg(int x, int y);
+
+extern void moveShipByTap(int const fingerId, float const dx, float const dy);
+extern void startShipShotByTap(int const fingerId);
+extern void endShipShotByTap(int const fingerId);

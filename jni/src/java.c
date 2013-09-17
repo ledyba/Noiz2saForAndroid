@@ -8,8 +8,9 @@
 
 #include "log.h"
 
-static JavaVM* vm;
-static jclass* klass;
+static JavaVM* vm = 0;
+static jclass* klass = 0;
+static jclass* actKlass = 0;
 
 
 static JNIEnv* attachJavaVM()
@@ -47,11 +48,12 @@ void JNICALL Java_org_ledyba_noiz2sa_Helper_onLoadJNI(JNIEnv* env, jclass klass_
 	}
 	klass = (jclass)((*env)->NewGlobalRef(env, klass_));
 	if(klass){
-		LOGD("Klass: %p", klass);
+		LOGD("Helper Klass: %p", klass);
 	}else{
-		LOGE("klass is null.");
+		LOGE("Helper Klass is null.");
 		exit(-1);
 	}
+	actKlass = 0;
 	LOGD("org.ledyba.noiz2sa.Helper.onLoadJNI loaded.");
 }
 
@@ -141,4 +143,35 @@ float JOYPAD_getX()
 float JOYPAD_getY()
 {
 	return padImpl("getY");
+}
+static void useActivityKlass(JNIEnv* env)
+{
+	if( !actKlass ){
+		actKlass = (*env)->FindClass(env,"org/ledyba/noiz2sa/Noiz2saActivity");
+		if(actKlass){
+			LOGD("Activity Klass: %p", klass);
+		}else{
+			LOGE("Activity Klass is null.");
+			exit(-1);
+		}
+	}
+}
+float Window_getScale()
+{
+	static const char* method="getScale";
+	JNIEnv* const env = attachJavaVM();
+	if(!env){
+		LOGE("getScale / env not found.");
+		return 0;
+	}
+	useActivityKlass(env);
+	jmethodID const mid = (*env)->GetStaticMethodID(env, actKlass, method, "()F");
+	if( !mid ){
+		LOGE("getScale / not found: %s", method);
+		detatchJavaVM();
+		return 0;
+	}
+	const float r = (*env)->CallStaticFloatMethod(env, actKlass, mid);
+	detatchJavaVM();
+	return r;
 }

@@ -129,8 +129,10 @@ static void makeSmokeBuf() {
   }
 }
 
+SDL_Rect displayRect;
+
 void initSDL(int window_) {
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
@@ -139,7 +141,6 @@ void initSDL(int window_) {
 	Uint8 const videoBpp = BPP;
 	Uint32 const videoFlags = (window_) ? 0 : SDL_WINDOW_FULLSCREEN;
 
-	SDL_Rect displayRect;
 	if (SDL_GetDisplayBounds(0, &displayRect) != 0) {
 		LOGE("Unable to get display rect: %s\n", SDL_GetError());
 		SDL_Quit();
@@ -564,16 +565,16 @@ int getPadState() {
   const float x = JOYPAD_getX();
   const float y = JOYPAD_getY();
   int pad = 0;
-  if ( keys[SDL_SCANCODE_RIGHT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_6] == SDL_PRESSED || x > JOYSTICK_AXIS ) {
+  if ( x > JOYSTICK_AXIS ) {
     pad |= PAD_RIGHT;
   }
-  if ( keys[SDL_SCANCODE_LEFT] == SDL_PRESSED || keys[SDL_SCANCODE_KP_4] == SDL_PRESSED || x < -JOYSTICK_AXIS ) {
+  if ( x < -JOYSTICK_AXIS ) {
     pad |= PAD_LEFT;
   }
-  if ( keys[SDL_SCANCODE_DOWN] == SDL_PRESSED || keys[SDL_SCANCODE_KP_2] == SDL_PRESSED || y > JOYSTICK_AXIS ) {
+  if ( y > JOYSTICK_AXIS ) {
     pad |= PAD_DOWN;
   }
-  if ( keys[SDL_SCANCODE_UP] == SDL_PRESSED ||  keys[SDL_SCANCODE_KP_8] == SDL_PRESSED || y < -JOYSTICK_AXIS ) {
+  if ( y < -JOYSTICK_AXIS ) {
     pad |= PAD_UP;
   }
   return pad;
@@ -582,24 +583,14 @@ int getPadState() {
 int buttonReversed = 0;
 
 int getButtonState() {
-  int btn = 0;
-  const int btn1 = JOYPAD_getA();
-  const int btn2 = JOYPAD_getB();
-  const int btn3 = 0;
-  const int btn4 = 0;
-  if ( keys[SDLK_z] == SDL_PRESSED || btn1 || btn4 ) {
-    if ( !buttonReversed ) {
-      btn |= PAD_BUTTON1;
-    } else {
-      btn |= PAD_BUTTON2;
-    }
-  }
-  if ( keys[SDLK_x] == SDL_PRESSED || btn2 || btn3 ) {
-    if ( !buttonReversed ) {
-      btn |= PAD_BUTTON2;
-    } else {
-      btn |= PAD_BUTTON1;
-    }
-  }
-  return btn;
+	int btn = 0;
+	const int btn1 = JOYPAD_getA();
+	const int btn2 = JOYPAD_getB();
+	if (JOYPAD_getA()) {
+		btn |= (buttonReversed) ? PAD_BUTTON2 : PAD_BUTTON1;
+	}
+	if (JOYPAD_getB()) {
+		btn |= (buttonReversed) ? PAD_BUTTON1 : PAD_BUTTON2;
+	}
+	return btn;
 }
