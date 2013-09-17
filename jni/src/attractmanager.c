@@ -330,12 +330,12 @@ void moveTitleMenu() {
 		titleCnt = 16;
 	}
 	if ( mnp && (btn & PAD_BUTTON1) ) {
-		if (slcStg <= STAGE_NUM) {
-			hiScore.stage = slcStg;
-			initGame(slcStg);
-		}else if ( slcStg == STAGE_NUM+ENDLESS_STAGE_NUM ) {
+		if ( slcStg == STAGE_NUM+ENDLESS_STAGE_NUM ) {
 			quitLast();
 			return;
+		}else{
+			hiScore.stage = slcStg;
+			initGame(slcStg);
 		}
 	}
 	titleCnt++;
@@ -417,9 +417,9 @@ void onTapTitle(float x,float y, int onlySel)
 {
 	int sel = -1;
 	for (int i=0 ; i<STG_BOX_NUM ; i++ ) {
-		float const stX = stageX[i];
-		float const stY = stageY[i];
-		if( x >= stX && y >= stY && (x-stX) <= STG_BOX_SIZE && (y-stY) <= STG_BOX_SIZE){
+		float const stX = stageX[i]-x;
+		float const stY = stageY[i]-y;
+		if( stX >= -STG_BOX_SIZE/2  && stY >= -STG_BOX_SIZE/2 && stX <= STG_BOX_SIZE/2 && stY <= STG_BOX_SIZE/2){
 			sel = i;
 			slcStg = sel;
 			initTitleStage(slcStg);
@@ -431,11 +431,11 @@ void onTapTitle(float x,float y, int onlySel)
 		return;
 	}
 	if(sel < 0) {
-	} else if(sel <= STAGE_NUM) {
-		hiScore.stage = slcStg;
-		initGame(slcStg);
 	} else if(sel == STAGE_NUM+ENDLESS_STAGE_NUM) {
 		quitLast();
+	}else{
+		hiScore.stage = slcStg;
+		initGame(slcStg);
 	}
 }
 

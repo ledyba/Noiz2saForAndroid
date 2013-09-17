@@ -131,12 +131,24 @@ void moveShip() {
 }
 void moveShipByTap(const int fingerId, float const dx, float const dy)
 {
-	LOGE("%fx%f / %fx%f", dx, dy, ship.pos.x/256.0f, ship.pos.y/256.0f);
-
-	int const ddx = (int)((dx/SCAN_WIDTH*LAYER_WIDTH)*256);
-	int const ddy = (int)((dy/SCAN_HEIGHT*LAYER_HEIGHT)*256);
+	int const ddx = (int)roundf((dx/SCAN_WIDTH*LAYER_WIDTH)*256);
+	int const ddy = (int)roundf((dy/SCAN_HEIGHT*LAYER_HEIGHT)*256);
 	ship.pos.x += ddx;
 	ship.pos.y += ddy;
+	if (ship.pos.x < SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+		ship.pos.x = SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+	} else if (ship.pos.x
+			> SCAN_WIDTH_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+		ship.pos.x =
+				SCAN_WIDTH_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+	}
+	if (ship.pos.y < SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+		ship.pos.y = SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+	} else if (ship.pos.y
+			> SCAN_HEIGHT_8 - SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH) {
+		ship.pos.y = SCAN_HEIGHT_8
+				- SHIP_SCAN_WIDTH * SHIP_SCREEN_EDGE_WIDTH;
+	}
 }
 void startShipShotByTap(int const fingerId)
 {
