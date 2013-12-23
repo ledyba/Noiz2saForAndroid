@@ -3,7 +3,6 @@ package org.ledyba.noiz2sa;
 import org.libsdl.app.SDLActivity;
 
 import android.content.res.AssetManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -16,8 +15,8 @@ public class Helper {
 		}
 		return ins_;
 	}
-	private float x_;
-	private float y_;
+	private float x_ = 0;
+	private float y_ = 0;
 	private int pressedA;
 	private int pressedB;
 	private int pressedStart;
@@ -42,6 +41,9 @@ public class Helper {
 		if(ev.getAction()==MotionEvent.ACTION_MOVE){
 			x_ = ev.getX();
 			y_ = ev.getY();
+		}else if(ev.getAction()==MotionEvent.ACTION_UP){
+			x_ = 0;
+			y_ = 0;
 		}
 	}
 	public static void onMotion(MotionEvent ev){
@@ -143,12 +145,14 @@ public class Helper {
 	public static float getX()
 	{
 		final float fx = getInstance().x_;
-		return Float.compare(0, fx) != 0 ? fx : getInstance().pressedX*1024*16;
+		return getInstance().pressedX == 0 ? fx : getInstance().pressedX*16384*2;
+		//return getInstance().pressedX*16384*2;
 	}
 	public static float getY()
 	{
 		final float fy = getInstance().y_;
-		return Float.compare(0, fy) != 0 ? fy : getInstance().pressedY*1024*16;
+		return getInstance().pressedY == 0 ? fy : getInstance().pressedY*16384*2;
+		//return getInstance().pressedY*16384*2;
 	}
 	public static int keyAPressed(){
 		return getInstance().pressedA;

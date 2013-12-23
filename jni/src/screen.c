@@ -565,16 +565,16 @@ int getPadState() {
   const float x = JOYPAD_getX();
   const float y = JOYPAD_getY();
   int pad = 0;
-  if ( x > JOYSTICK_AXIS ) {
+  if ( x >= JOYSTICK_AXIS ) {
     pad |= PAD_RIGHT;
   }
-  if ( x < -JOYSTICK_AXIS ) {
+  if ( x <= -JOYSTICK_AXIS ) {
     pad |= PAD_LEFT;
   }
-  if ( y > JOYSTICK_AXIS ) {
+  if ( y >= JOYSTICK_AXIS ) {
     pad |= PAD_DOWN;
   }
-  if ( y < -JOYSTICK_AXIS ) {
+  if ( y <= -JOYSTICK_AXIS ) {
     pad |= PAD_UP;
   }
   return pad;

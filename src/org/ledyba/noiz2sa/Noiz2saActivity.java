@@ -26,6 +26,7 @@ public class Noiz2saActivity extends SDLActivity {
 	
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
+		Log.d(TAG, "type: "+event.getKeyCode());
 		if(event.getRepeatCount() == 0){
 			if(event.getAction() == KeyEvent.ACTION_DOWN) {
 				Helper.onKeyDown(event.getKeyCode());
@@ -39,8 +40,7 @@ public class Noiz2saActivity extends SDLActivity {
 	@Override
 	public boolean onGenericMotionEvent(MotionEvent event)
 	{
-		final int src = event.getDevice().getSources();
-		if(((src & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD)) {
+		if(event.getSource() == InputDevice.SOURCE_GAMEPAD || event.getSource() == InputDevice.SOURCE_JOYSTICK){
 			Helper.onMotion(event);
 		}
 		return super.onGenericMotionEvent(event);
