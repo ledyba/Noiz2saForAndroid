@@ -1,9 +1,10 @@
 #!/bin/bash
 
 if [ -z $NDK_ROOT ]; then
-		NDK_ROOT=/opt/android-ndk-r9
+		NDK_ROOT=/opt/android-ndk-r9c
 fi
 
+echo NDK_ROOT=$NDK_ROOT
 # For compatibility of android-ndk-r9, 4.7 was removed from r9
 if [ -d "${NDK_ROOT}/toolchains/arm-linux-androideabi-4.8" ]; then
 	export NDK_TOOLCHAIN_VERSION=4.8

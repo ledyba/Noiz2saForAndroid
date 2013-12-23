@@ -10,6 +10,7 @@
  * @version $Revision: 1.8 $
  */
 #include "SDL.h"
+#include "SDL_mixer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -294,7 +295,20 @@ int main(int argc, char *argv[]) {
 		while(SDL_PollEvent(&event)){
 			switch(event.type){
 			case SDL_QUIT:
+			case SDL_APP_TERMINATING:
+				LOGD("quit");
 				done = 1;
+				break;
+			case SDL_APP_WILLENTERBACKGROUND:
+				LOGD("to background.");
+				Mix_Pause(-1);
+				Mix_PauseMusic();
+				done = 1;//FIXME: なぜかうまくquitが降ってこない。
+				break;
+			case SDL_APP_WILLENTERFOREGROUND:
+				LOGD("to foreground.");
+				Mix_Resume(-1);
+				Mix_ResumeMusic();
 				break;
 			case  SDL_FINGERMOTION:
 				useScale();

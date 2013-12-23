@@ -1,3 +1,5 @@
+#include <sys/types.h>
+#include <unistd.h>
 #include <jni.h>
 #include "org_ledyba_noiz2sa_Helper.h"
 #include "java.h"
@@ -16,6 +18,7 @@ static jclass* actKlass = 0;
 static JNIEnv* attachJavaVM()
 {
 	JNIEnv *env;
+	//LOGE("attatch JavaVM: %p", vm);
 	int status = (*vm)->AttachCurrentThread(vm, &env, NULL);
 	if(status < 0) {
 		LOGE("failed to attach current thread");
@@ -53,20 +56,20 @@ void JNICALL Java_org_ledyba_noiz2sa_Helper_onLoadJNI(JNIEnv* env, jclass klass_
 		LOGE("Helper Klass is null.");
 		exit(-1);
 	}
-	actKlass = 0;
+	actKlass = (jclass)((*env)->NewGlobalRef(env, (*env)->FindClass(env, "org/ledyba/noiz2sa/Noiz2saActivity")));
 	LOGD("org.ledyba.noiz2sa.Helper.onLoadJNI loaded.");
 }
 
 AAssetManager* getAAssetManager()
 {
-	//LOGD("getAAssetManager called.");
+	LOGD("getAAssetManager called.");
 	JNIEnv* env = attachJavaVM();
-	//LOGD("getAAssetManager / attatched: %p", env);
+	LOGD("getAAssetManager / attatched: %p", env);
 	jmethodID getAssetManagerId =
 		(*env)->GetStaticMethodID(env, klass, "getAssetManager", "()Landroid/content/res/AssetManager;");
-	//LOGD("getAAssetManager / method: %p", getAssetManagerId);
+	LOGD("getAAssetManager / method: %p", getAssetManagerId);
 	if( getAssetManagerId ){
-		//LOGD("getAssetManagerId: %p", getAssetManagerId);
+		LOGD("getAssetManagerId: %p", getAssetManagerId);
 	}else{
 		LOGE("getAssetManagerId is null.");
 		detatchJavaVM();
@@ -74,10 +77,38 @@ AAssetManager* getAAssetManager()
 	}
 	AAssetManager* mgr =
 		AAssetManager_fromJava(env, (*env)->CallStaticObjectMethod(env, klass, getAssetManagerId));
-	//LOGD("getAAssetManager / mgr: %p", mgr);
+	LOGD("getAAssetManager / mgr: %p", mgr);
 	detatchJavaVM();
-	//LOGD("getAAssetManager / detatched.");
+	LOGD("getAAssetManager / detatched.");
 	return mgr;
+}
+
+const char* getPrefPath(){
+	LOGD("getPrefPath called.");
+	static char* path=0;
+	if(path){
+		return path;
+	}
+	LOGD("getPrefPath / getPathFromJava.");
+	JNIEnv* env = attachJavaVM();
+	LOGD("getPrefPath / attatched: %p / %p", env, actKlass);
+	jmethodID method = (*env)->GetStaticMethodID(env, actKlass, "getPrefPath", "()Ljava/lang/String;");
+	LOGD("getPrefPath / method: %p", method);
+	jstring obj = (jstring)((*env)->CallStaticObjectMethod(env, actKlass, method));
+	if( !obj ){
+		detatchJavaVM();
+		exit(-1);
+	}
+	const char* tmp = (*env)->GetStringUTFChars(env, obj, 0);
+	int size=strlen(tmp);
+	path=malloc(size+1);
+	memcpy(path, tmp, size);
+	path[size]=0;
+	(*env)->ReleaseStringUTFChars(env,obj,tmp);
+	detatchJavaVM();
+
+	return path;
+
 }
 
 static int keyImpl(const char* method)

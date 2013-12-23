@@ -48,6 +48,7 @@ static const char *BARRAGE_DIR_NAME[] = {
 static int readBulletMLFiles(const char *dirPath, Barrage brg[]) {
 	int i = 0;
 	char fileName[256];
+	fprintf(stdout, "Opening...: %s\n", dirPath);
 	AAssetDir* const di = AAssetManager_openDir(getAAssetManager(), dirPath);
 	if ( di == NULL ) {
 		fprintf(stderr, "Can't open directory: %s\n", dirPath);

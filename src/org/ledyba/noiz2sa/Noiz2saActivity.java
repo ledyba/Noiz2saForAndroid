@@ -1,5 +1,7 @@
 package org.ledyba.noiz2sa;
 
+import java.io.File;
+
 import org.libsdl.app.SDLActivity;
 
 import android.os.Bundle;
@@ -47,6 +49,9 @@ public class Noiz2saActivity extends SDLActivity {
 	private static Noiz2saActivity self = null;
 	public static Noiz2saActivity getInstance(){
 		return self;
+	}
+	public static String getPrefPath(){
+		return new File(getInstance().getFilesDir(), "pref").getAbsolutePath();
 	}
 	public static float getScale(){
 		if( self == null ) {

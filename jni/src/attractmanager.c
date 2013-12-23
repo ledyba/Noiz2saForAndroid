@@ -12,6 +12,7 @@
 #include "SDL.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "java.h"
 
 #include "noiz2sa.h"
 #include "screen.h"
@@ -37,7 +38,6 @@ static int hsScene, hsScSc, hsOfs;
 
 static HiScore hiScore;
 
-#define PREF_FILE "noiz2sa.prf"
 #define DEFAULT_HISCORE 100000
 #define DEFAULT_SCENE_HISCORE 10000
 
@@ -71,8 +71,9 @@ void loadPreference() {
   FILE *fp;
   int i, j;
   int version;
-  if ( NULL == (fp = fopen(PREF_FILE,"rb")) ) {
-    fprintf(stdout, "file not found: %s", PREF_FILE);
+  fprintf(stdout, "Loading preference.");
+  if ( NULL == (fp = fopen(getPrefPath(),"rb")) ) {
+    fprintf(stdout, "file not found: %s", getPrefPath());
     initHiScore();
     return;
   }
@@ -100,7 +101,10 @@ void loadPreference() {
 void savePreference() {
   FILE *fp;
   int i, j;
-  if ( NULL == (fp = fopen(PREF_FILE,"wb")) ) return;
+  if ( NULL == (fp = fopen(getPrefPath(),"wb")) ) {
+	fprintf(stderr, "Failed to open pref file to write.");
+	return;
+  }
   putInt(VERSION_NUM, fp);
   for ( i=0 ; i<STAGE_NUM ; i++ ) {
     putInt(hiScore.stageScore[i], fp);
@@ -216,7 +220,7 @@ void drawRPanel() {
   if ( hsScene >= 0 ) {
 	static const int SceneStatSize = 9;
 	static const int SceneStatY = 34*3;
-    int x = 40+SceneStatSize;
+    int x = 10+SceneStatSize;
     x = drawNumRight(stage+1, x, SceneStatY, SceneStatSize, 16*1-12, 16*1-3);
     drawLetter(38, x, SceneStatY, SceneStatSize, 2,  16*1-12, 16*1-3, rpbuf);
     x += SceneStatSize*1.7f;

@@ -11,6 +11,7 @@ typedef int AAssetManager;
 extern "C" {
 #endif
 extern AAssetManager* getAAssetManager();
+extern const char* getPrefPath();
 extern float JOYPAD_getX();
 extern float JOYPAD_getY();
 
