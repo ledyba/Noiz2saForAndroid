@@ -91,8 +91,8 @@ public class Noiz2saActivity extends SDLActivity {
 
 	@Override
 	protected void onPause() {
-		super.finish();
 		super.onPause();
+		super.finish();
 	}
 	
 	@Override

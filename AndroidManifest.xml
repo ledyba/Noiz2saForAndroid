@@ -36,5 +36,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+		<activity android:name="org.ledyba.noiz2sa.donation.DonationActivity" android:exported="true">
+			<intent-filter>
+				<action android:name="org.ledyba.noiz2sa.donation.DonationActivity" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
     </application>
 </manifest> 

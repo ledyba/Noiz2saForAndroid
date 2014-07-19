@@ -241,7 +241,7 @@ void drawRPanel() {
 }
 
 #define STG_BOX_SIZE 40
-#define STG_BOX_NUM 15
+#define STG_BOX_NUM 16
 
 static int stageX[STG_BOX_NUM], stageY[STG_BOX_NUM];
 
@@ -273,6 +273,10 @@ void initAttractManager() {
 			break;
 		case 5:
 			y += STG_BOX_SIZE / 3;
+			for (j = 0; j < 1; j++, s++, x += STG_BOX_SIZE * 1.2f) {
+				stageX[s] = x;
+				stageY[s] = y;
+			}
 			stageX[s] = x;
 			stageY[s] = y;
 			break;
@@ -299,13 +303,13 @@ void drawTitle() {
 	}
 }
 
-static int stgMv[STAGE_NUM+ENDLESS_STAGE_NUM+1][4] = {
+static int stgMv[STAGE_NUM+ENDLESS_STAGE_NUM+2][4] = {
   {0, 0, 1, 0}, 
   {-1, 1, 2, 0}, {0, 0, 2, -1}, 
   {-2, 1, 3, 0}, {-2, 1, 3, -1}, {0, 0, 3, -1},
   {-3, 1, 4, 0}, {-3, 1, 4, -1}, {-3, 1, 4, -1}, {0, 0, 3, -1},
   {-4, 1, 4, 0}, {-4, 1, 3, -1}, {-4, 1, 2, -1},                {0, 0, 1, -1},
-  {-4, 0, 0, 0},
+  {-4, 1, 0, 0}, {-4, 0, 0, -1},
 };
 
 void moveTitleMenu() {
@@ -353,6 +357,7 @@ void drawTitleMenu() {
   char *extChr = "EXTREME";
   char *insChr = "INSANE";
   char *quitChr = "QUIT";
+  char *donateChr = "DONATE";
   for ( i=0 ; i<STG_BOX_NUM ; i++ ) {
     if ( i == slcStg ) {
       int sz = STG_BOX_SIZE+6+sctbl[(titleCnt*16)&(DIV-1)]/24;
@@ -379,6 +384,9 @@ void drawTitleMenu() {
 	  break;
 	case 14:
 	  drawStringBuf(quitChr, 230, 80, 12, 2, 16*1-14, 16*1-2, buf, 0);
+	  break;
+	case 15:
+	  drawStringBuf(donateChr, 230, 80, 12, 2, 16*1-14, 16*1-2, buf, 0);
 	  break;
 	}
       }
@@ -412,6 +420,9 @@ void drawTitleMenu() {
       case 14:
 	drawLetterBuf('Q'-'A'+10, stageX[i], stageY[i], 12, 2, 16*1-16, 16*1-1, buf, 0);
 	break;
+      case 15:
+	drawLetterBuf('D'-'A'+10, stageX[i], stageY[i], 12, 2, 16*1-16, 16*1-1, buf, 0);
+	break;
       }
     }
   }
@@ -437,6 +448,8 @@ void onTapTitle(float x,float y, int onlySel)
 	if(sel < 0) {
 	} else if(sel == STAGE_NUM+ENDLESS_STAGE_NUM) {
 		quitLast();
+	} else if(sel == STAGE_NUM+ENDLESS_STAGE_NUM+1) {
+		startDonationActivity();
 	}else{
 		hiScore.stage = slcStg;
 		initGame(slcStg);

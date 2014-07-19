@@ -49,16 +49,15 @@ void quitLast() {
   closeBarragemanager();
   closeSDL();
   SDL_Quit();
-  exit(1);
 }
 
 enum GameMode status;
 
-static float stagePrm[STAGE_NUM+ENDLESS_STAGE_NUM+1][3] = {
+static float stagePrm[STAGE_NUM+ENDLESS_STAGE_NUM+2][3] = {
   {13, 0.5f, 0.12f}, {2, 1.8f, 0.15f}, {3, 3.2f, 0.1f}, {90, 6.0f, 0.3f}, {5, 5.0f, 0.6f},
   {6, 10.0f, 0.6f}, {7, 5.0f, 2.2f}, {98, 12.0f, 1.5f}, {9, 10.0f, 2.0f}, {79, 21.0f, 1.5f},
   {-3, 5.0f, 0.7f}, {-1, 10.0f, 1.2f}, {-4, 15.0f, 1.8f}, {-2, 16.0f, 1.8f},
-  {0, -1.0f, 0.0f},
+  {0, -1.0f, 0.0f},{0, -1.0f, 0.0f}
 };
 
 void initTitleStage(int stg) {

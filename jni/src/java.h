@@ -22,6 +22,8 @@ extern int JOYPAD_getSelect();
 
 extern float Window_getScale();
 
+extern void startDonationActivity();
+
 #ifdef __cplusplus
 }
 #endif

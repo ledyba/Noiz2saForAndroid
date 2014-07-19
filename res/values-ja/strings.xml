@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Noiz2sa</string>
+    
+    <string name="Settings">設定</string>
+    <string name="EnableNotification">センサを有効にする</string>
+
+    <string name="Version">Ver</string>
+    <string name="AppVersion">1.0</string>
+    
+    <string name="Author">作者</string>
+    <string name="PSI">ψ（プサイ）</string>
+    
+    <string name="URL">Web</string>
+    <string name="PSI_URL">http://ledyba.org/</string>
+    
+    
+    <string name="Support">サポート</string>
+    <string name="MakeDonation">寄付する</string>
+    <string name="ViewSource">ソース on github</string>
+    <string name="ViewLicense">ライセンスを見る</string>
+    
+    <string name="donation">寄付</string>
+    <string name="price">値段</string>
+    <string name="nowLoading">Now loading&#8230;</string>
+    <string name="notFound">見つかりませんでした</string>
+    <string name="Error">情報取得中にエラーが発生しました</string>
+    
+</resources>

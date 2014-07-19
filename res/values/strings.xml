@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Noiz2sa</string>
+    
+    <string name="Settings">Settings</string>
+    <string name="EnableNotification">Enable sensor</string>
+
+    <string name="Version">Ver</string>
+    <string name="AppVersion">1.0</string>
+    
+    <string name="Author">Author</string>
+    <string name="PSI">PSI</string>
+    
+    <string name="URL">Web</string>
+    <string name="PSI_URL">http://ledyba.org/</string>
+    
+    
+    <string name="Support">Support</string>
+    <string name="MakeDonation">Make donation</string>
+    <string name="ViewSource">View source on github</string>
+    <string name="ViewLicense">View license</string>
+    
+    <string name="donation">Donation</string>
+    <string name="price">Price</string>
+    <string name="nowLoading">Now loading&#8230;</string>
+    <string name="notFound">Not found.</string>
+    <string name="Error">Error has occurred during loading</string>
+    
 </resources>

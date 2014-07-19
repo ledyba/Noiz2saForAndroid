@@ -206,3 +206,30 @@ float Window_getScale()
 	detatchJavaVM();
 	return r;
 }
+
+void startDonationActivity()
+{
+	JNIEnv* const env = attachJavaVM();
+	jclass intentClass = (*env)->FindClass(env, "android/content/Intent");
+	jstring actionString = (*env)->NewStringUTF(env, "org.ledyba.noiz2sa.donation.DonationActivity");
+	jmethodID newIntent = (*env)->GetMethodID(env, intentClass, "<init>", "()V");
+
+	jobject intent = (*env)->AllocObject(env, intentClass);
+	(*env)->CallVoidMethod(env, intent, newIntent);
+
+	jmethodID setAction = (*env)->GetMethodID(env, intentClass, "setAction","(Ljava/lang/String;)Landroid/content/Intent;");
+	(*env)->CallObjectMethod(env, intent, setAction, actionString);
+
+	jclass activityClass = (*env)->FindClass(env, "android/app/Activity");
+	jmethodID startActivity = (*env)->GetMethodID(env, activityClass,"startActivity", "(Landroid/content/Intent;)V");
+
+	jobject intentObject = (*env)->NewObject(env, intentClass, newIntent);
+	(*env)->CallVoidMethod(env, intentObject, setAction,actionString);
+
+	useActivityKlass(env);
+	jmethodID const mid = (*env)->GetStaticMethodID(env, actKlass, "getInstance", "()Lorg/ledyba/noiz2sa/Noiz2saActivity;");
+	jobject actKlassObject = (*env)->CallStaticObjectMethod(env, actKlass, mid);
+	
+	(*env)->CallVoidMethod(env, actKlassObject, startActivity, intentObject);
+	detatchJavaVM();
+}
