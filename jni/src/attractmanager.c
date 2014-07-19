@@ -386,7 +386,7 @@ void drawTitleMenu() {
 	  drawStringBuf(quitChr, 230, 80, 12, 2, 16*1-14, 16*1-2, buf, 0);
 	  break;
 	case 15:
-	  drawStringBuf(donateChr, 230, 80, 12, 2, 16*1-14, 16*1-2, buf, 0);
+	  drawStringBuf(donateChr, 210, 80, 12, 2, 16*1-14, 16*1-2, buf, 0);
 	  break;
 	}
       }

@@ -280,6 +280,7 @@ int main(int argc, char *argv[]) {
 	SDL_Event event;
 	long nowTick;
 	int frame;
+	int sleep=0;
 
 	parseArgs(argc, argv);
 
@@ -302,12 +303,14 @@ int main(int argc, char *argv[]) {
 				LOGD("to background.");
 				Mix_Pause(-1);
 				Mix_PauseMusic();
+				sleep=1;
 				//done = 1;//FIXME: なぜかうまくquitが降ってこない。
 				break;
 			case SDL_APP_WILLENTERFOREGROUND:
 				LOGD("to foreground.");
 				Mix_Resume(-1);
 				Mix_ResumeMusic();
+				sleep=0;
 				break;
 			case  SDL_FINGERMOTION:
 				useScale();
@@ -342,6 +345,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		keys = SDL_GetKeyboardState(NULL);
+		if(sleep) {
+			SDL_Delay(50);
+			prvTickCount = SDL_GetTicks();
+			continue;
+		}
 		if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) {
 			LOGD("Escape pressed.");
 			done = 1;
