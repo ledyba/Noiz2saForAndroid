@@ -225,7 +225,7 @@ public class DonationActivity extends Activity {
 	}
 	@Override
 	protected void onDestroy() {
-		startActivity(new Intent(this, org.ledyba.noiz2sa.Noiz2saActivity.class));     
+		//startActivity(new Intent(this, org.ledyba.noiz2sa.Noiz2saActivity.class));     
 		super.onDestroy();
 	}
 

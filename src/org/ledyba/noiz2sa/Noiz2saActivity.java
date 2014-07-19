@@ -12,7 +12,8 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.view.ViewGroup;
+import android.view.View;
+import android.widget.AbsoluteLayout;
 import android.widget.FrameLayout;
 
 public class Noiz2saActivity extends SDLActivity {
@@ -68,20 +69,6 @@ public class Noiz2saActivity extends SDLActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		self = this;
-		final Display disp = getWindowManager().getDefaultDisplay();
-		this.scale_ = Math.min(disp.getWidth()/320.f, disp.getHeight()/480.f);
-		
-		final int w = (int)(320*this.scale_);
-		final int h = (int)(480*this.scale_);
-		
-		final FrameLayout fm = (FrameLayout)this.findViewById(android.R.id.content);
-		final ViewGroup abs = (ViewGroup)fm.getChildAt(0);
-		final SurfaceView surf = (SurfaceView)abs.getChildAt(0);
-		surf.getHolder().setFixedSize(320, 480);
-		abs.removeAllViews();
-		fm.removeAllViews();
-		fm.addView(surf, new FrameLayout.LayoutParams(w,h,Gravity.CENTER));
-		Log.d(TAG, "Fixed Size: " + w+"x"+h);
 	}
 
 	@Override
@@ -92,12 +79,31 @@ public class Noiz2saActivity extends SDLActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		super.finish();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		final Display disp = getWindowManager().getDefaultDisplay();
+		this.scale_ = Math.min(disp.getWidth()/320.f, disp.getHeight()/480.f);
+		
+		final int w = (int)(320*this.scale_);
+		final int h = (int)(480*this.scale_);
+
+		final FrameLayout fm = (FrameLayout)this.findViewById(android.R.id.content);
+		final View v = fm.getChildAt(0);
+		SurfaceView surf;
+		if(!(v instanceof SurfaceView)){
+			final AbsoluteLayout abs = (AbsoluteLayout)v;
+			surf = (SurfaceView)abs.getChildAt(0);
+			abs.removeAllViews();
+		}else{
+			surf = (SurfaceView) v;
+		}
+		surf.getHolder().setFixedSize(320, 480);
+		fm.removeAllViews();
+		fm.addView(surf, new FrameLayout.LayoutParams(w,h,Gravity.CENTER));
+		Log.d(TAG, "Fixed Size: " + w+"x"+h);
 	}
 
 }

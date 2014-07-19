@@ -295,14 +295,14 @@ int main(int argc, char *argv[]) {
 			switch(event.type){
 			case SDL_QUIT:
 			case SDL_APP_TERMINATING:
-				LOGD("quit");
+				LOGD("terminated");
 				done = 1;
 				break;
 			case SDL_APP_WILLENTERBACKGROUND:
 				LOGD("to background.");
 				Mix_Pause(-1);
 				Mix_PauseMusic();
-				done = 1;//FIXME: なぜかうまくquitが降ってこない。
+				//done = 1;//FIXME: なぜかうまくquitが降ってこない。
 				break;
 			case SDL_APP_WILLENTERFOREGROUND:
 				LOGD("to foreground.");
@@ -342,7 +342,10 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		keys = SDL_GetKeyboardState(NULL);
-		if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) done = 1;
+		if ( keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED ) {
+			LOGD("Escape pressed.");
+			done = 1;
+		}
 		if ( keys[SDL_SCANCODE_P] == SDL_PRESSED ) {
 			if ( !pPrsd ) {
 				if ( status == IN_GAME ) {
@@ -381,4 +384,5 @@ int main(int argc, char *argv[]) {
 		flipScreen();
 	}
 	quitLast();
+	LOGD("Good bye...");
 }
