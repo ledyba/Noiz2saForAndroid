@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z $NDK_ROOT ]; then
-		NDK_ROOT=/opt/android-ndk-r9c
+		NDK_ROOT=/opt/android-ndk-r10
 fi
 
 echo NDK_ROOT=$NDK_ROOT
